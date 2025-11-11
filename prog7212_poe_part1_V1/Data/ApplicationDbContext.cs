@@ -11,7 +11,10 @@ namespace prog7212_poe_part1_V1.Data
             : base(options)
         {
         }
+
         public DbSet<ReportModel> Reports { get; set; }
+        public DbSet<Event> Events { get; set; }
+        public DbSet<UserPreference> UserPreferences { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -23,6 +26,11 @@ namespace prog7212_poe_part1_V1.Data
                 .WithMany()
                 .HasForeignKey(r => r.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Configure Event
+            builder.Entity<Event>()
+                .Property(e => e.Price)
+                .HasPrecision(18, 2);
         }
     }
 }

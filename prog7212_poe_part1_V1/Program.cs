@@ -20,7 +20,7 @@ builder.Services.Configure<FormOptions>(options =>
     options.MultipartBodyLengthLimit = 5 * 1024 * 1024; // 5MB limit
 });
 
-builder.Services.AddSingleton<EventService>();
+builder.Services.AddScoped<EventService>();
 
 builder.Services.AddControllersWithViews();
 

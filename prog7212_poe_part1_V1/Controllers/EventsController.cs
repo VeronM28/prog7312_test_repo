@@ -11,9 +11,9 @@ namespace prog7212_poe_part1_V1.Controllers
     {
         private readonly EventService _eventService;
 
-        public EventsController()
+        public EventsController(EventService eventService)
         {
-            _eventService = new EventService();
+            _eventService = eventService;
         }
 
         public IActionResult Index()
@@ -25,7 +25,6 @@ namespace prog7212_poe_part1_V1.Controllers
                 Recommendations = _eventService.GetRecommendedEvents(),
                 RecentSearches = _eventService.GetRecentSearches().Take(5).ToList()
             };
-
             return View(viewModel);
         }
 
@@ -33,7 +32,6 @@ namespace prog7212_poe_part1_V1.Controllers
         public IActionResult Search(EventSearch search)
         {
             var results = _eventService.SearchEvents(search);
-
             var viewModel = new EventsViewModel
             {
                 UpcomingEvents = results,
@@ -42,20 +40,16 @@ namespace prog7212_poe_part1_V1.Controllers
                 Recommendations = _eventService.GetRecommendedEvents(),
                 RecentSearches = _eventService.GetRecentSearches().Take(5).ToList()
             };
-
             return View("Index", viewModel);
         }
 
         public IActionResult Details(int id)
         {
-            var allEvents = _eventService.GetAllEvents();
-            var eventItem = allEvents.FirstOrDefault(e => e.Id == id);
-
+            var eventItem = _eventService.GetEventById(id);
             if (eventItem == null)
             {
                 return NotFound();
             }
-
             return View(eventItem);
         }
 

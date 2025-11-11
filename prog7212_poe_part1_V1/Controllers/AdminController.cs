@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using prog7212_poe_part1_V1.Data;
 using prog7212_poe_part1_V1.Models;
 using prog7212_poe_part1_V1.ViewModels;
+using prog7212_poe_part1_V1.Services;
 
 namespace prog7212_poe_part1_V1.Controllers
 {
@@ -13,11 +14,14 @@ namespace prog7212_poe_part1_V1.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<UserModel> _userManager;
+        private readonly EventService _eventService;
 
-        public AdminController(ApplicationDbContext context, UserManager<UserModel> userManager)
+        public AdminController(ApplicationDbContext context, UserManager<UserModel> userManager, EventService eventService)
         {
             _context = context;
             _userManager = userManager;
+            _eventService = eventService;
+
         }
 
         // GET: Admin/Reports
@@ -165,6 +169,121 @@ namespace prog7212_poe_part1_V1.Controllers
             };
 
             return View(dashboardViewModel);
+        }
+
+        // GET: Admin/Events
+        public IActionResult Events()
+        {
+            var events = _eventService.GetAllEvents();
+            return View(events);
+        }
+
+        // GET: Admin/CreateEvent
+        public IActionResult CreateEvent()
+        {
+            ViewBag.Categories = GetEventCategoryList();
+            return View();
+        }
+
+        // POST: Admin/CreateEvent
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateEvent(Event eventModel)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var user = await _userManager.GetUserAsync(User);
+                    eventModel.CreatedBy = user?.Email;
+                    eventModel.CreatedDate = DateTime.Now;
+
+                    _eventService.AddEvent(eventModel);
+
+                    TempData["Success"] = "Event created successfully!";
+                    return RedirectToAction("Events");
+                }
+                catch (Exception ex)
+                {
+                    TempData["Error"] = "An error occurred while creating the event.";
+                }
+            }
+
+            ViewBag.Categories = GetEventCategoryList();
+            return View(eventModel);
+        }
+
+        // GET: Admin/EditEvent/5
+        public IActionResult EditEvent(int id)
+        {
+            var eventItem = _eventService.GetEventById(id);
+            if (eventItem == null)
+            {
+                TempData["Error"] = "Event not found.";
+                return RedirectToAction("Events");
+            }
+
+            ViewBag.Categories = GetEventCategoryList();
+            return View(eventItem);
+        }
+
+        // POST: Admin/EditEvent/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditEvent(Event eventModel)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _eventService.UpdateEvent(eventModel);
+                    TempData["Success"] = "Event updated successfully!";
+                    return RedirectToAction("Events");
+                }
+                catch (Exception ex)
+                {
+                    TempData["Error"] = "An error occurred while updating the event.";
+                }
+            }
+
+            ViewBag.Categories = GetEventCategoryList();
+            return View(eventModel);
+        }
+
+        // POST: Admin/DeleteEvent/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteEvent(int id)
+        {
+            try
+            {
+                _eventService.DeleteEvent(id);
+                TempData["Success"] = "Event deleted successfully!";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "An error occurred while deleting the event.";
+            }
+
+            return RedirectToAction("Events");
+        }
+
+        private List<string> GetEventCategoryList()
+        {
+            return new List<string>
+    {
+        "Music",
+        "Technology",
+        "Food",
+        "Art",
+        "Sports",
+        "Education",
+        "Business",
+        "Health",
+        "Entertainment",
+        "Community",
+        "Other"
+    };
         }
     }
 }

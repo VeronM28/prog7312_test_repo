@@ -1,0 +1,913 @@
+﻿@model List<prog7212_poe_part1_V1.Models.Event>
+@{
+    ViewData["Title"] = "Manage Events";
+}
+
+<div class="admin-events-container">
+    <div class="container-fluid">
+        <!-- Header Section -->
+        <div class="page-header-admin">
+            <div class="header-content-admin">
+                <div class="header-left">
+                    <div class="header-icon-admin">
+                        <i class="bi bi-calendar-event"></i>
+                    </div>
+                    <div class="header-text-admin">
+                        <h1>Event Management</h1>
+                        <p>Create and manage community events</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <a asp-action="CreateEvent" class="btn-create-new">
+                        <i class="bi bi-plus-circle"></i>
+                        <span>Create New Event</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card stat-total">
+                <div class="stat-icon">
+                    <i class="bi bi-calendar-check"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">Total Events</div>
+                    <div class="stat-value">@Model.Count()</div>
+                </div>
+            </div>
+            <div class="stat-card stat-upcoming">
+                <div class="stat-icon">
+                    <i class="bi bi-clock-history"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">Upcoming</div>
+                    <div class="stat-value">@Model.Count(e => e.Date >= DateTime.Now)</div>
+                </div>
+            </div>
+            <div class="stat-card stat-past">
+                <div class="stat-icon">
+                    <i class="bi bi-calendar-x"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">Past Events</div>
+                    <div class="stat-value">@Model.Count(e => e.Date < DateTime.Now)</div>
+                </div>
+            </div>
+            <div class="stat-card stat-free">
+                <div class="stat-icon">
+                    <i class="bi bi-tag"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">Free Events</div>
+                    <div class="stat-value">@Model.Count(e => e.Price == 0)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alerts -->
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert-success-modern">
+                <i class="bi bi-check-circle-fill"></i>
+                <span>@TempData["Success"]</span>
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert-error-modern">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <span>@TempData["Error"]</span>
+            </div>
+        }
+
+        <!-- Events Table -->
+        <div class="events-table-card">
+            <div class="table-header">
+                <h3><i class="bi bi-list-ul"></i> All Events</h3>
+                <div class="table-search">
+                    <i class="bi bi-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search events..." />
+                </div>
+            </div>
+
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>Event Details</th>
+                                <th>Date & Time</th>
+                                <th>Category</th>
+                                <th>Location</th>
+                                <th>Price</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="eventsTableBody">
+                            @foreach (var eventItem in Model.OrderByDescending(e => e.Date))
+                            {
+                                <tr class="event-row">
+                                    <td>
+                                        <div class="event-details-cell">
+                                            <div class="event-title-cell">@eventItem.Title</div>
+                                            <div class="event-description-cell">@eventItem.Description</div>
+                                            @if (!string.IsNullOrEmpty(eventItem.CreatedBy))
+                                            {
+                                                <div class="created-by">Created by: @eventItem.CreatedBy</div>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="date-cell">
+                                            <div class="date-main">@eventItem.Date.ToString("MMM dd, yyyy")</div>
+                                            <div class="time-sub">@eventItem.Date.ToString("h:mm tt")</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="category-badge">@eventItem.Category</span>
+                                    </td>
+                                    <td>
+                                        <div class="location-cell">
+                                            <i class="bi bi-geo-alt"></i>
+                                            <span>@eventItem.Location</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @if (eventItem.Price == 0)
+                                        {
+                                            <span class="price-badge free">FREE</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="price-badge paid">@eventItem.Price.ToString("C")</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="priority-badge priority-@eventItem.Priority">
+                                            P@eventItem.Priority
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (eventItem.Date >= DateTime.Now)
+                                        {
+                                            <span class="status-badge upcoming">
+                                                <i class="bi bi-clock"></i>
+                                                Upcoming
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="status-badge past">
+                                                <i class="bi bi-check"></i>
+                                                Past
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <a asp-action="EditEvent" asp-route-id="@eventItem.Id"
+                                               class="btn-action btn-edit" title="Edit">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <button type="button" class="btn-action btn-delete"
+                                                    onclick="confirmDelete(@eventItem.Id, '@eventItem.Title')"
+                                                    title="Delete">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="no-events-state">
+                    <div class="empty-icon">
+                        <i class="bi bi-calendar-x"></i>
+                    </div>
+                    <h3>No Events Yet</h3>
+                    <p>Get started by creating your first event</p>
+                    <a asp-action="CreateEvent" class="btn-create-first">
+                        <i class="bi bi-plus-circle"></i>
+                        Create First Event
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal-overlay" id="deleteModal">
+    <div class="modal-content">
+        <div class="modal-header-delete">
+            <i class="bi bi-exclamation-triangle"></i>
+            <h3>Confirm Deletion</h3>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure you want to delete the event:</p>
+            <p class="event-name-delete" id="eventNameDelete"></p>
+            <p class="warning-text">This action cannot be undone.</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-cancel" onclick="closeDeleteModal()">
+                Cancel
+            </button>
+            <form id="deleteForm" method="post" style="display: inline;">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn-confirm-delete">
+                    <i class="bi bi-trash"></i>
+                    Delete Event
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary-color: #6366f1;
+        --primary-dark: #4f46e5;
+        --secondary-color: #8b5cf6;
+        --success-color: #10b981;
+        --danger-color: #ef4444;
+        --warning-color: #f59e0b;
+        --info-color: #3b82f6;
+        --bg-color: #f8fafc;
+        --card-bg: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --border-color: #e2e8f0;
+    }
+
+    .admin-events-container {
+        background: var(--bg-color);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    /* Header */
+    .page-header-admin {
+        margin-bottom: 2rem;
+    }
+
+    .header-content-admin {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        padding: 2rem;
+        border-radius: 1.5rem;
+        color: white;
+        box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .header-icon-admin {
+        width: 60px;
+        height: 60px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        backdrop-filter: blur(10px);
+    }
+
+    .header-text-admin h1 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+    }
+
+    .header-text-admin p {
+        margin: 0.25rem 0 0;
+        opacity: 0.95;
+    }
+
+    .btn-create-new {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: white;
+        color: var(--primary-color);
+        padding: 0.875rem 1.75rem;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+        .btn-create-new:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            color: var(--primary-dark);
+        }
+
+    /* Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+        color: white;
+    }
+
+    .stat-total .stat-icon {
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
+    }
+
+    .stat-upcoming .stat-icon {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .stat-past .stat-icon {
+        background: linear-gradient(135deg, #64748b, #475569);
+    }
+
+    .stat-free .stat-icon {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    .stat-content {
+        flex: 1;
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        line-height: 1.2;
+    }
+
+    /* Alerts */
+    .alert-success-modern,
+    .alert-error-modern {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem 1.5rem;
+        border-radius: 0.75rem;
+        margin-bottom: 1.5rem;
+        font-weight: 500;
+    }
+
+    .alert-success-modern {
+        background: #d1fae5;
+        color: #065f46;
+        border-left: 4px solid var(--success-color);
+    }
+
+    .alert-error-modern {
+        background: #fee2e2;
+        color: #991b1b;
+        border-left: 4px solid var(--danger-color);
+    }
+
+    /* Table Card */
+    .events-table-card {
+        background: white;
+        border-radius: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
+
+    .table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem 2rem;
+        border-bottom: 2px solid var(--border-color);
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    }
+
+        .table-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+    .table-search {
+        position: relative;
+    }
+
+        .table-search i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .table-search input {
+            padding: 0.625rem 1rem 0.625rem 2.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 0.95rem;
+            width: 300px;
+            transition: all 0.3s ease;
+        }
+
+            .table-search input:focus {
+                outline: none;
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            }
+
+    /* Table */
+    .modern-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .modern-table thead {
+            background: #f8fafc;
+        }
+
+        .modern-table th {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .modern-table td {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+    .event-row:hover {
+        background: #f8fafc;
+    }
+
+    .event-details-cell {
+        max-width: 300px;
+    }
+
+    .event-title-cell {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+    }
+
+    .event-description-cell {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .created-by {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        margin-top: 0.5rem;
+        font-style: italic;
+    }
+
+    .date-cell {
+        white-space: nowrap;
+    }
+
+    .date-main {
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .time-sub {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin-top: 0.25rem;
+    }
+
+    .category-badge {
+        display: inline-block;
+        padding: 0.375rem 0.875rem;
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        color: var(--primary-color);
+        border-radius: 1rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+
+    .location-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+    }
+
+        .location-cell i {
+            color: var(--danger-color);
+        }
+
+    .price-badge {
+        display: inline-block;
+        padding: 0.375rem 0.875rem;
+        border-radius: 1rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+
+        .price-badge.free {
+            background: #d1fae5;
+            color: var(--success-color);
+        }
+
+        .price-badge.paid {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+    .priority-badge {
+        display: inline-block;
+        padding: 0.375rem 0.75rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+
+    .priority-1 {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .priority-2 {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .priority-3 {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+
+    .priority-4 {
+        background: #e0e7ff;
+        color: #3730a3;
+    }
+
+    .priority-5 {
+        background: #f3e8ff;
+        color: #6b21a8;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 0.375rem 0.875rem;
+        border-radius: 1rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+
+        .status-badge.upcoming {
+            background: #dbeafe;
+            color: var(--info-color);
+        }
+
+        .status-badge.past {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .btn-action {
+        width: 36px;
+        height: 36px;
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        font-size: 1rem;
+    }
+
+    .btn-edit {
+        background: #dbeafe;
+        color: var(--info-color);
+    }
+
+        .btn-edit:hover {
+            background: #bfdbfe;
+            transform: scale(1.1);
+        }
+
+    .btn-delete {
+        background: #fee2e2;
+        color: var(--danger-color);
+    }
+
+        .btn-delete:hover {
+            background: #fecaca;
+            transform: scale(1.1);
+        }
+
+    /* Empty State */
+    .no-events-state {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        color: var(--border-color);
+        margin-bottom: 1.5rem;
+    }
+
+    .no-events-state h3 {
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .no-events-state p {
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+    }
+
+    .btn-create-first {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        padding: 0.875rem 1.75rem;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+        .btn-create-first:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+            color: white;
+        }
+
+    /* Modal */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+    .modal-content {
+        background: white;
+        border-radius: 1rem;
+        max-width: 500px;
+        width: 90%;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        animation: modalSlideIn 0.3s ease;
+    }
+
+    @@keyframes modalSlideIn {
+        from
+
+    {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    }
+
+    .modal-header-delete {
+        padding: 2rem;
+        text-align: center;
+        border-bottom: 2px solid var(--border-color);
+    }
+
+        .modal-header-delete i {
+            font-size: 3rem;
+            color: var(--danger-color);
+            margin-bottom: 1rem;
+        }
+
+        .modal-header-delete h3 {
+            margin: 0;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+        }
+
+    .modal-body {
+        padding: 2rem;
+        text-align: center;
+    }
+
+        .modal-body p {
+            margin: 0 0 1rem;
+            color: var(--text-secondary);
+        }
+
+    .event-name-delete {
+        font-weight: 700;
+        color: var(--text-primary);
+        font-size: 1.1rem;
+    }
+
+    .warning-text {
+        color: var(--danger-color);
+        font-weight: 600;
+    }
+
+    .modal-footer {
+        padding: 1.5rem 2rem;
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        background: #f8fafc;
+        border-radius: 0 0 1rem 1rem;
+    }
+
+    .btn-cancel,
+    .btn-confirm-delete {
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .btn-cancel {
+        background: white;
+        color: var(--text-primary);
+        border: 2px solid var(--border-color);
+    }
+
+        .btn-cancel:hover {
+            background: var(--bg-color);
+        }
+
+    .btn-confirm-delete {
+        background: var(--danger-color);
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .btn-confirm-delete:hover {
+            background: #dc2626;
+        }
+
+    /* Responsive */
+    @@media (max-width: 1200px) {
+        .modern-table
+
+    {
+        font-size: 0.875rem;
+    }
+
+    }
+
+    @@media (max-width: 768px) {
+        .header-content-admin
+
+    {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .header-left {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .header-text-admin h1 {
+        font-size: 1.5rem;
+    }
+
+    .table-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .table-search input {
+        width: 100%;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .modern-table {
+        min-width: 800px;
+    }
+
+    }
+</style>
+
+<script>
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('keyup', function() {
+        const searchTerm = this.value.toLowerCase();
+        const rows = document.querySelectorAll('#eventsTableBody tr');
+
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(searchTerm) ? '' : 'none';
+        });
+    });
+
+    // Delete confirmation
+    function confirmDelete(eventId, eventTitle) {
+        document.getElementById('eventNameDelete').textContent = eventTitle;
+        document.getElementById('deleteForm').action = '/Admin/DeleteEvent/' + eventId;
+        document.getElementById('deleteModal').classList.add('active');
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.remove('active');
+    }
+
+    // Close modal on overlay click
+    document.getElementById('deleteModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeDeleteModal();
+        }
+    });
+</script>

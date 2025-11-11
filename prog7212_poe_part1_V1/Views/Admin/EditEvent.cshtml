@@ -1,0 +1,589 @@
+﻿@model prog7212_poe_part1_V1.Models.Event
+@{
+    ViewData["Title"] = "Edit Event";
+}
+
+<div class="admin-edit-event-container">
+    <div class="container">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb-admin">
+            <a asp-action="Events" class="breadcrumb-link">
+                <i class="bi bi-arrow-left"></i>
+                <span>Back to Events</span>
+            </a>
+        </div>
+
+        <!-- Page Header -->
+        <div class="edit-header">
+            <div class="header-icon-edit">
+                <i class="bi bi-pencil-square"></i>
+            </div>
+            <div class="header-text-edit">
+                <h1>Edit Event</h1>
+                <p>Update event information</p>
+            </div>
+        </div>
+
+        <!-- Form Card -->
+        <div class="row justify-content-center">
+            <div class="col-xl-9">
+                <div class="form-card-admin">
+                    <form asp-action="EditEvent" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="CreatedDate" />
+                        <input type="hidden" asp-for="CreatedBy" />
+
+                        <div asp-validation-summary="ModelOnly" class="alert-danger-admin mb-4">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            <span>Please correct the errors below</span>
+                        </div>
+
+                        <!-- Event Info Badge -->
+                        <div class="event-info-badge">
+                            <div class="info-item">
+                                <i class="bi bi-hash"></i>
+                                <span>Event ID: <strong>@Model.Id</strong></span>
+                            </div>
+                            @if (!string.IsNullOrEmpty(Model.CreatedBy))
+                            {
+                                <div class="info-item">
+                                    <i class="bi bi-person"></i>
+                                    <span>Created by: <strong>@Model.CreatedBy</strong></span>
+                                </div>
+                            }
+                            <div class="info-item">
+                                <i class="bi bi-calendar-plus"></i>
+                                <span>Created: <strong>@Model.CreatedDate.ToString("MMM dd, yyyy")</strong></span>
+                            </div>
+                        </div>
+
+                        <div class="form-grid-admin">
+                            <!-- Event Title -->
+                            <div class="form-group-admin full-width">
+                                <label asp-for="Title" class="form-label-admin">
+                                    <i class="bi bi-card-heading"></i>
+                                    <span>Event Title</span>
+                                    <span class="required-star">*</span>
+                                </label>
+                                <input asp-for="Title" class="form-input-admin"
+                                       placeholder="Enter a compelling event title" />
+                                <span asp-validation-for="Title" class="text-danger-small"></span>
+                            </div>
+
+                            <!-- Category -->
+                            <div class="form-group-admin">
+                                <label asp-for="Category" class="form-label-admin">
+                                    <i class="bi bi-tag-fill"></i>
+                                    <span>Category</span>
+                                    <span class="required-star">*</span>
+                                </label>
+                                <div class="select-wrapper-admin">
+                                    <select asp-for="Category" class="form-input-admin" asp-items="@(new SelectList(ViewBag.Categories))">
+                                        <option value="">-- Select Category --</option>
+                                    </select>
+                                    <i class="bi bi-chevron-down select-arrow"></i>
+                                </div>
+                                <span asp-validation-for="Category" class="text-danger-small"></span>
+                            </div>
+
+                            <!-- Priority -->
+                            <div class="form-group-admin">
+                                <label asp-for="Priority" class="form-label-admin">
+                                    <i class="bi bi-flag-fill"></i>
+                                    <span>Priority</span>
+                                    <span class="required-star">*</span>
+                                </label>
+                                <div class="select-wrapper-admin">
+                                    <select asp-for="Priority" class="form-input-admin">
+                                        <option value="1">1 - Highest</option>
+                                        <option value="2">2 - High</option>
+                                        <option value="3">3 - Medium</option>
+                                        <option value="4">4 - Low</option>
+                                        <option value="5">5 - Lowest</option>
+                                    </select>
+                                    <i class="bi bi-chevron-down select-arrow"></i>
+                                </div>
+                                <span asp-validation-for="Priority" class="text-danger-small"></span>
+                            </div>
+
+                            <!-- Date -->
+                            <div class="form-group-admin">
+                                <label asp-for="Date" class="form-label-admin">
+                                    <i class="bi bi-calendar-event"></i>
+                                    <span>Event Date & Time</span>
+                                    <span class="required-star">*</span>
+                                </label>
+                                <input asp-for="Date" type="datetime-local" class="form-input-admin" />
+                                <span asp-validation-for="Date" class="text-danger-small"></span>
+                            </div>
+
+                            <!-- Location -->
+                            <div class="form-group-admin">
+                                <label asp-for="Location" class="form-label-admin">
+                                    <i class="bi bi-geo-alt-fill"></i>
+                                    <span>Location</span>
+                                    <span class="required-star">*</span>
+                                </label>
+                                <input asp-for="Location" class="form-input-admin"
+                                       placeholder="Event venue or address" />
+                                <span asp-validation-for="Location" class="text-danger-small"></span>
+                            </div>
+
+                            <!-- Price -->
+                            <div class="form-group-admin">
+                                <label asp-for="Price" class="form-label-admin">
+                                    <i class="bi bi-currency-dollar"></i>
+                                    <span>Ticket Price</span>
+                                </label>
+                                <input asp-for="Price" type="number" step="0.01" class="form-input-admin"
+                                       placeholder="0.00 for free events" />
+                                <div class="input-help">Enter 0 for free events</div>
+                                <span asp-validation-for="Price" class="text-danger-small"></span>
+                            </div>
+
+                            <!-- Image URL -->
+                            <div class="form-group-admin">
+                                <label asp-for="ImageUrl" class="form-label-admin">
+                                    <i class="bi bi-image"></i>
+                                    <span>Image URL</span>
+                                    <span class="optional-badge-admin">Optional</span>
+                                </label>
+                                <input asp-for="ImageUrl" class="form-input-admin"
+                                       placeholder="https://example.com/image.jpg" />
+                                <span asp-validation-for="ImageUrl" class="text-danger-small"></span>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="form-group-admin full-width">
+                                <label asp-for="Description" class="form-label-admin">
+                                    <i class="bi bi-card-text"></i>
+                                    <span>Event Description</span>
+                                    <span class="required-star">*</span>
+                                </label>
+                                <textarea asp-for="Description" class="form-textarea-admin" rows="6"
+                                          placeholder="Provide a detailed description of the event"></textarea>
+                                <div class="character-counter">
+                                    <i class="bi bi-info-circle"></i>
+                                    <span>Make it engaging and informative</span>
+                                </div>
+                                <span asp-validation-for="Description" class="text-danger-small"></span>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="form-actions-admin">
+                            <a asp-action="Events" class="btn-secondary-admin">
+                                <i class="bi bi-x-circle"></i>
+                                <span>Cancel</span>
+                            </a>
+                            <button type="submit" class="btn-primary-admin">
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>Save Changes</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Warning Card -->
+                <div class="warning-card-admin">
+                    <div class="warning-icon-admin">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                    </div>
+                    <div class="warning-content-admin">
+                        <h4>Important Notes</h4>
+                        <ul>
+                            <li>Changes will be immediately visible to all users</li>
+                            <li>Make sure to review all information before saving</li>
+                            <li>Updating the date may affect user notifications</li>
+                            <li>Past events can still be edited for record-keeping</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary-color: #6366f1;
+        --primary-dark: #4f46e5;
+        --secondary-color: #8b5cf6;
+        --success-color: #10b981;
+        --danger-color: #ef4444;
+        --warning-color: #f59e0b;
+        --bg-color: #f8fafc;
+        --card-bg: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --border-color: #e2e8f0;
+    }
+
+    .admin-edit-event-container {
+        background: var(--bg-color);
+        min-height: 100vh;
+        padding: 2rem 0 4rem;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb-admin {
+        margin-bottom: 1.5rem;
+    }
+
+    .breadcrumb-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-weight: 600;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        transition: all 0.2s ease;
+    }
+
+        .breadcrumb-link:hover {
+            color: var(--primary-color);
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transform: translateX(-3px);
+        }
+
+    /* Header */
+    .edit-header {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        padding: 2.5rem;
+        border-radius: 1.5rem;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 25px rgba(245, 158, 11, 0.3);
+    }
+
+    .header-icon-edit {
+        width: 70px;
+        height: 70px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        backdrop-filter: blur(10px);
+    }
+
+    .header-text-edit h1 {
+        margin: 0;
+        font-size: 2.25rem;
+        font-weight: 700;
+    }
+
+    .header-text-edit p {
+        margin: 0.5rem 0 0;
+        opacity: 0.95;
+        font-size: 1.1rem;
+    }
+
+    /* Form Card */
+    .form-card-admin {
+        background: white;
+        border-radius: 1.5rem;
+        padding: 2.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        margin-bottom: 2rem;
+    }
+
+    .alert-danger-admin {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem 1.25rem;
+        background: #fee2e2;
+        border-left: 4px solid var(--danger-color);
+        border-radius: 0.75rem;
+        color: #991b1b;
+        font-weight: 500;
+    }
+
+    /* Event Info Badge */
+    .event-info-badge {
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        padding: 1.25rem;
+        border-radius: 1rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+        border: 2px solid #93c5fd;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #1e40af;
+        font-size: 0.9rem;
+    }
+
+        .info-item i {
+            font-size: 1rem;
+        }
+
+        .info-item strong {
+            color: #1e3a8a;
+        }
+
+    /* Form Grid */
+    .form-grid-admin {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.75rem;
+    }
+
+    .form-group-admin {
+        display: flex;
+        flex-direction: column;
+    }
+
+        .form-group-admin.full-width {
+            grid-column: 1 / -1;
+        }
+
+    .form-label-admin {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.75rem;
+        font-size: 0.95rem;
+    }
+
+        .form-label-admin i {
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+    .required-star {
+        color: var(--danger-color);
+        font-weight: 700;
+    }
+
+    .optional-badge-admin {
+        background: #dbeafe;
+        color: var(--primary-color);
+        padding: 0.125rem 0.5rem;
+        border-radius: 1rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 0.25rem;
+    }
+
+    .form-input-admin,
+    .form-textarea-admin {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border: 2px solid var(--border-color);
+        border-radius: 0.75rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: white;
+        color: var(--text-primary);
+    }
+
+        .form-input-admin:focus,
+        .form-textarea-admin:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+    .form-textarea-admin {
+        resize: vertical;
+        min-height: 120px;
+        line-height: 1.6;
+    }
+
+    .select-wrapper-admin {
+        position: relative;
+    }
+
+    .select-arrow {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-secondary);
+        pointer-events: none;
+    }
+
+    .input-help,
+    .character-counter {
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        margin-top: 0.5rem;
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+    }
+
+    .text-danger-small {
+        display: block;
+        color: var(--danger-color);
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        font-weight: 500;
+    }
+
+    /* Form Actions */
+    .form-actions-admin {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-top: 2.5rem;
+        padding-top: 2rem;
+        border-top: 2px solid var(--border-color);
+    }
+
+    .btn-primary-admin,
+    .btn-secondary-admin {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.875rem 1.75rem;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        font-size: 1rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .btn-primary-admin {
+        background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+        .btn-primary-admin:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+            color: white;
+        }
+
+    .btn-secondary-admin {
+        background: white;
+        color: var(--text-primary);
+        border: 2px solid var(--border-color);
+    }
+
+        .btn-secondary-admin:hover {
+            background: var(--bg-color);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+    /* Warning Card */
+    .warning-card-admin {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        border-radius: 1rem;
+        padding: 1.75rem;
+        display: flex;
+        gap: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .warning-icon-admin {
+        width: 50px;
+        height: 50px;
+        background: var(--warning-color);
+        border-radius: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.75rem;
+        flex-shrink: 0;
+    }
+
+    .warning-content-admin h4 {
+        margin: 0 0 1rem;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .warning-content-admin ul {
+        margin: 0;
+        padding-left: 1.25rem;
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        line-height: 1.8;
+    }
+
+    .warning-content-admin li {
+        margin-bottom: 0.5rem;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .edit-header
+
+    {
+        flex-direction: column;
+        text-align: center;
+        padding: 2rem 1.5rem;
+    }
+
+    .header-text-edit h1 {
+        font-size: 1.75rem;
+    }
+
+    .form-card-admin {
+        padding: 1.5rem;
+    }
+
+    .event-info-badge {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .form-grid-admin {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions-admin {
+        flex-direction: column-reverse;
+    }
+
+    .btn-primary-admin,
+    .btn-secondary-admin {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .warning-card-admin {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .warning-icon-admin {
+        margin: 0 auto;
+    }
+
+    .warning-content-admin ul {
+        text-align: left;
+    }
+
+    }
+</style>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
