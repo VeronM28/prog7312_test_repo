@@ -4,178 +4,910 @@
     ViewData["Title"] = "Manage Reports";
 }
 
-<div class="container-fluid py-4">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header pb-0">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h4 class="mb-0">Manage Reports</h4>
-                        <span class="badge bg-info">Total: @Model.Reports.Count reports</span>
-                    </div>
+<div class="modern-admin-reports-container">
+    <div class="container-fluid">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="header-content">
+                <div class="header-icon">
+                    <i class="bi bi-folder-open"></i>
                 </div>
-                <div class="card-body">
-                    <!-- Filters -->
-                    <div class="row mb-4">
-                        <div class="col-md-12">
-                            <form method="get" class="d-flex gap-3 align-items-end">
-                                <div class="form-group">
-                                    <label for="category" class="form-label">Filter by Category</label>
-                                    <select name="category" id="category" class="form-select">
-                                        @foreach (var category in Model.Categories)
-                                        {
-                                            <option value="@category" selected="@(category == Model.SelectedCategory)">
-                                                @category
-                                            </option>
-                                        }
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="status" class="form-label">Filter by Status</label>
-                                    <select name="status" id="status" class="form-select">
-                                        @foreach (var status in Model.Statuses)
-                                        {
-                                            <option value="@status" selected="@(status == Model.SelectedStatus)">
-                                                @status
-                                            </option>
-                                        }
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <button type="submit" class="btn btn-primary">Filter</button>
-                                    <a href="@Url.Action("Reports")" class="btn btn-secondary">Clear</a>
-                                </div>
-                            </form>
+                <div class="header-text">
+                    <h1>Manage Reports</h1>
+                    <p>Review, filter, and update report statuses</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Card -->
+        <div class="reports-card">
+            <!-- Card Header with Total Count -->
+            <div class="card-header-modern">
+                <div class="header-left">
+                    <h2><i class="bi bi-list-check"></i> All Reports</h2>
+                    <p>Manage and track all submitted reports</p>
+                </div>
+                <div class="total-badge">
+                    <i class="bi bi-file-earmark-text"></i>
+                    <span>@Model.Reports.Count</span>
+                    <small>Total Reports</small>
+                </div>
+            </div>
+
+            <!-- Filters Section -->
+            <div class="filters-section">
+                <form method="get" class="filters-form">
+                    <div class="filter-group">
+                        <label for="category" class="filter-label">
+                            <i class="bi bi-tag"></i>
+                            <span>Category</span>
+                        </label>
+                        <div class="select-wrapper">
+                            <select name="category" id="category" class="filter-select">
+                                @foreach (var category in Model.Categories)
+                                {
+                                    <option value="@category" selected="@(category == Model.SelectedCategory)">
+                                        @category
+                                    </option>
+                                }
+                            </select>
+                            <i class="bi bi-chevron-down select-icon"></i>
                         </div>
                     </div>
 
-                    <!-- Reports Table -->
-                    <div class="table-responsive">
-                        @if (Model.Reports.Any())
-                        {
-                            <table class="table table-striped table-hover">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>User</th>
-                                        <th>Category</th>
-                                        <th>Location</th>
-                                        <th>Status</th>
-                                        <th>Date Submitted</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var report in Model.Reports)
-                                    {
-                                        <tr>
-                                            <td><strong>#@report.Id</strong></td>
-                                            <td>@(report.User?.UserName ?? "Unknown User")</td>
-                                            <td>
-                                                <span class="badge bg-secondary">@report.Category</span>
-                                            </td>
-                                            <td>@report.Location</td>
-                                            <td>
-                                                @{
-                                                    string statusClass = report.Status switch
-                                                    {
-                                                        "Pending" => "bg-warning text-dark",
-                                                        "In-Progress" => "bg-info",
-                                                        "Completed" => "bg-success",
-                                                        _ => "bg-secondary"
-                                                    };
-                                                }
-                                                <span class="badge @statusClass">@report.Status</span>
-                                            </td>
-                                            <td>@report.DateSubmitted.ToString("MMM dd, yyyy HH:mm")</td>
-                                            <td>
-                                                <div class="dropdown">
-                                                    <button class="btn btn-sm btn-outline-primary dropdown-toggle"
-                                                            type="button" data-bs-toggle="dropdown">
-                                                        Update Status
-                                                    </button>
-                                                    <ul class="dropdown-menu">
-                                                        <li>
-                                                            <form method="post" asp-action="UpdateStatus" class="d-inline">
-                                                                @Html.AntiForgeryToken()
-                                                                <input type="hidden" name="reportId" value="@report.Id" />
-                                                                <input type="hidden" name="status" value="Pending" />
-                                                                <button type="submit" class="dropdown-item"
-                                                                @(report.Status == "Pending" ? "disabled" : "")>
-                                                                    <i class="fas fa-clock text-warning"></i> Pending
-                                                                </button>
-                                                            </form>
-                                                        </li>
-                                                        <li>
-                                                            <form method="post" asp-action="UpdateStatus" class="d-inline">
-                                                                @Html.AntiForgeryToken()
-                                                                <input type="hidden" name="reportId" value="@report.Id" />
-                                                                <input type="hidden" name="status" value="In-Progress" />
-                                                                <button type="submit" class="dropdown-item"
-                                                                @(report.Status == "In-Progress" ? "disabled" : "")>
-                                                                    <i class="fas fa-spinner text-info"></i> In-Progress
-                                                                </button>
-                                                            </form>
-                                                        </li>
-                                                        <li>
-                                                            <form method="post" asp-action="UpdateStatus" class="d-inline">
-                                                                @Html.AntiForgeryToken()
-                                                                <input type="hidden" name="reportId" value="@report.Id" />
-                                                                <input type="hidden" name="status" value="Completed" />
-                                                                <button type="submit" class="dropdown-item"
-                                                                @(report.Status == "Completed" ? "disabled" : "")>
-                                                                    <i class="fas fa-check text-success"></i> Completed
-                                                                </button>
-                                                            </form>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                                <a href="@Url.Action("ReportDetails", new { id = report.Id })"
-                                                   class="btn btn-sm btn-outline-info ms-2">
-                                                    <i class="fas fa-eye"></i> View
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        }
-                        else
-                        {
-                            <div class="text-center py-5">
-                                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                                <p class="text-muted">No reports found matching the selected filters.</p>
-                                <a href="@Url.Action("Reports")" class="btn btn-primary">View All Reports</a>
-                            </div>
-                        }
+                    <div class="filter-group">
+                        <label for="status" class="filter-label">
+                            <i class="bi bi-flag"></i>
+                            <span>Status</span>
+                        </label>
+                        <div class="select-wrapper">
+                            <select name="status" id="status" class="filter-select">
+                                @foreach (var status in Model.Statuses)
+                                {
+                                    <option value="@status" selected="@(status == Model.SelectedStatus)">
+                                        @status
+                                    </option>
+                                }
+                            </select>
+                            <i class="bi bi-chevron-down select-icon"></i>
+                        </div>
                     </div>
-                </div>
+
+                    <div class="filter-actions">
+                        <button type="submit" class="btn-filter">
+                            <i class="bi bi-funnel"></i>
+                            <span>Apply Filters</span>
+                        </button>
+                        <a href="@Url.Action("Reports")" class="btn-clear">
+                            <i class="bi bi-x-circle"></i>
+                            <span>Clear</span>
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Reports Table -->
+            <div class="table-section">
+                @if (Model.Reports.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="modern-table">
+                            <thead>
+                                <tr>
+                                    <th>Report ID</th>
+                                    <th>User</th>
+                                    <th>Category</th>
+                                    <th>Location</th>
+                                    <th>Status</th>
+                                    <th>Submitted</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var report in Model.Reports)
+                                {
+                                    <tr class="table-row">
+                                        <td>
+                                            <div class="report-id">
+                                                <i class="bi bi-hash"></i>
+                                                <strong>@report.Id</strong>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="user-info">
+                                                <div class="user-avatar">
+                                                    <i class="bi bi-person"></i>
+                                                </div>
+                                                <span>@(report.User?.UserName ?? "Unknown User")</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="category-badge">
+                                                <i class="bi bi-tag-fill"></i>
+                                                @report.Category
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="location-info">
+                                                <i class="bi bi-geo-alt-fill"></i>
+                                                <span>@report.Location</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @{
+                                                var statusInfo = GetStatusInfo(report.Status);
+                                            }
+                                            <span class="status-badge" style="background: @statusInfo.Background; color: @statusInfo.Color;">
+                                                <i class="bi bi-@statusInfo.Icon"></i>
+                                                @report.Status
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="date-info">
+                                                <i class="bi bi-calendar-event"></i>
+                                                <div class="date-content">
+                                                    <span class="date">@report.DateSubmitted.ToString("MMM dd, yyyy")</span>
+                                                    <span class="time">@report.DateSubmitted.ToString("HH:mm")</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="action-buttons">
+                                                <!-- Status Update Dropdown -->
+                                                <div class="dropdown-wrapper">
+                                                    <button class="btn-status-update" onclick="toggleDropdown(this)">
+                                                        <i class="bi bi-arrow-repeat"></i>
+                                                        <span>Update</span>
+                                                        <i class="bi bi-chevron-down"></i>
+                                                    </button>
+                                                    <div class="dropdown-menu-custom">
+                                                        <form method="post" asp-action="UpdateStatus" class="status-form" onsubmit="return confirmUpdate(event, '@report.Id', 'Pending')">
+                                                            @Html.AntiForgeryToken()
+                                                            <input type="hidden" name="reportId" value="@report.Id" />
+                                                            <input type="hidden" name="status" value="Pending" />
+                                                            <button type="submit" class="dropdown-item @(report.Status == "Pending" ? "disabled" : "")" @(report.Status == "Pending" ? "disabled" : "")>
+                                                                <i class="bi bi-hourglass-split" style="color: #f59e0b;"></i>
+                                                                <span>Pending</span>
+                                                            </button>
+                                                        </form>
+                                                        <form method="post" asp-action="UpdateStatus" class="status-form" onsubmit="return confirmUpdate(event, '@report.Id', 'In-Progress')">
+                                                            @Html.AntiForgeryToken()
+                                                            <input type="hidden" name="reportId" value="@report.Id" />
+                                                            <input type="hidden" name="status" value="In-Progress" />
+                                                            <button type="submit" class="dropdown-item @(report.Status == "In-Progress" ? "disabled" : "")" @(report.Status == "In-Progress" ? "disabled" : "")>
+                                                                <i class="bi bi-arrow-repeat" style="color: #3b82f6;"></i>
+                                                                <span>In-Progress</span>
+                                                            </button>
+                                                        </form>
+                                                        <form method="post" asp-action="UpdateStatus" class="status-form" onsubmit="return confirmUpdate(event, '@report.Id', 'Completed')">
+                                                            @Html.AntiForgeryToken()
+                                                            <input type="hidden" name="reportId" value="@report.Id" />
+                                                            <input type="hidden" name="status" value="Completed" />
+                                                            <button type="submit" class="dropdown-item @(report.Status == "Completed" ? "disabled" : "")" @(report.Status == "Completed" ? "disabled" : "")>
+                                                                <i class="bi bi-check-circle-fill" style="color: #10b981;"></i>
+                                                                <span>Completed</span>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+
+                                                <!-- View Button -->
+                                                <a href="@Url.Action("ReportDetails", new { id = report.Id })" class="btn-view">
+                                                    <i class="bi bi-eye"></i>
+                                                    <span>View</span>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <!-- Empty State -->
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="bi bi-inbox"></i>
+                        </div>
+                        <h3>No Reports Found</h3>
+                        <p>No reports match the selected filters. Try adjusting your filter criteria.</p>
+                        <a href="@Url.Action("Reports")" class="btn-primary-modern">
+                            <i class="bi bi-arrow-clockwise"></i>
+                            <span>View All Reports</span>
+                        </a>
+                    </div>
+                }
             </div>
         </div>
     </div>
 </div>
 
-@section Scripts {
-    <script>
-        // Auto-submit form on select change for better UX
-        document.getElementById('category').addEventListener('change', function() {
-            this.form.submit();
+<style>
+    :root {
+        --primary-color: #6366f1;
+        --primary-dark: #4f46e5;
+        --secondary-color: #8b5cf6;
+        --success-color: #10b981;
+        --danger-color: #ef4444;
+        --warning-color: #f59e0b;
+        --info-color: #3b82f6;
+        --bg-color: #f8fafc;
+        --card-bg: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --border-color: #e2e8f0;
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+        --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .modern-admin-reports-container {
+        background: var(--bg-color);
+        min-height: 100vh;
+        padding: 2rem 0 4rem;
+    }
+
+    /* Page Header */
+    .page-header {
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .header-content {
+        display: inline-flex;
+        align-items: center;
+        gap: 1.5rem;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        padding: 2rem 3rem;
+        border-radius: 1.5rem;
+        color: white;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .header-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        backdrop-filter: blur(10px);
+    }
+
+    .header-text h1 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+        text-align: left;
+    }
+
+    .header-text p {
+        margin: 0.25rem 0 0;
+        font-size: 1rem;
+        opacity: 0.95;
+        text-align: left;
+    }
+
+    /* Reports Card */
+    .reports-card {
+        background: white;
+        border-radius: 1.5rem;
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+    }
+
+    .card-header-modern {
+        padding: 2rem;
+        border-bottom: 2px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    }
+
+    .header-left h2 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .header-left h2 i {
+            color: var(--primary-color);
+        }
+
+    .header-left p {
+        margin: 0.25rem 0 0;
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+    }
+
+    .total-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem 1.5rem;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        border-radius: 0.75rem;
+        color: white;
+        box-shadow: var(--shadow-md);
+    }
+
+        .total-badge i {
+            font-size: 1.5rem;
+        }
+
+        .total-badge span {
+            font-size: 1.75rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .total-badge small {
+            font-size: 0.75rem;
+            opacity: 0.9;
+        }
+
+    /* Filters Section */
+    .filters-section {
+        padding: 2rem;
+        background: white;
+        border-bottom: 2px solid var(--border-color);
+    }
+
+    .filters-form {
+        display: flex;
+        gap: 1.5rem;
+        align-items: flex-end;
+        flex-wrap: wrap;
+    }
+
+    .filter-group {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .filter-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+        .filter-label i {
+            color: var(--primary-color);
+        }
+
+    .select-wrapper {
+        position: relative;
+    }
+
+    .filter-select {
+        width: 100%;
+        padding: 0.75rem 2.5rem 0.75rem 1rem;
+        border: 2px solid var(--border-color);
+        border-radius: 0.75rem;
+        font-size: 0.95rem;
+        background: white;
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        appearance: none;
+    }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+    .select-icon {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-secondary);
+        pointer-events: none;
+    }
+
+    .filter-actions {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .btn-filter,
+    .btn-clear {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+    }
+
+    .btn-filter {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        box-shadow: var(--shadow-sm);
+    }
+
+        .btn-filter:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+    .btn-clear {
+        background: white;
+        color: var(--text-secondary);
+        border: 2px solid var(--border-color);
+    }
+
+        .btn-clear:hover {
+            background: var(--bg-color);
+            border-color: var(--danger-color);
+            color: var(--danger-color);
+        }
+
+    /* Table Section */
+    .table-section {
+        padding: 2rem;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .modern-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .modern-table thead {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        }
+
+        .modern-table th {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .modern-table tbody tr {
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+
+            .modern-table tbody tr:hover {
+                background: #f8fafc;
+            }
+
+        .modern-table td {
+            padding: 1.25rem 1.5rem;
+            color: var(--text-primary);
+            vertical-align: middle;
+        }
+
+    /* Table Cell Styles */
+    .report-id {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+        .report-id i {
+            color: var(--text-secondary);
+        }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .user-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1rem;
+    }
+
+    .category-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0.875rem;
+        background: linear-gradient(135deg, var(--secondary-color) 0%, #7c3aed 100%);
+        color: white;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+
+    .location-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+    }
+
+        .location-info i {
+            color: var(--primary-color);
+        }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0.875rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .date-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+        .date-info i {
+            color: var(--primary-color);
+            font-size: 1.25rem;
+        }
+
+    .date-content {
+        display: flex;
+        flex-direction: column;
+        gap: 0.125rem;
+    }
+
+        .date-content .date {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .date-content .time {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .dropdown-wrapper {
+        position: relative;
+    }
+
+    .btn-status-update {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: white;
+        border: 2px solid var(--primary-color);
+        border-radius: 0.5rem;
+        color: var(--primary-color);
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+        .btn-status-update:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+    .dropdown-menu-custom {
+        position: absolute;
+        top: calc(100% + 0.5rem);
+        left: 0;
+        background: white;
+        border-radius: 0.75rem;
+        box-shadow: var(--shadow-lg);
+        padding: 0.5rem;
+        min-width: 180px;
+        z-index: 1000;
+        display: none;
+    }
+
+        .dropdown-menu-custom.show {
+            display: block;
+        }
+
+    .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        border: none;
+        background: transparent;
+        width: 100%;
+        text-align: left;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-primary);
+    }
+
+        .dropdown-item:hover:not(.disabled) {
+            background: var(--bg-color);
+        }
+
+        .dropdown-item.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .dropdown-item i {
+            font-size: 1.1rem;
+        }
+
+    .btn-view {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: transparent;
+        border: 2px solid var(--info-color);
+        border-radius: 0.5rem;
+        color: var(--info-color);
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+        .btn-view:hover {
+            background: var(--info-color);
+            color: white;
+        }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+
+    .empty-icon {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 2rem;
+        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        color: var(--text-secondary);
+    }
+
+    .empty-state h3 {
+        margin: 0 0 1rem;
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .empty-state p {
+        margin: 0 0 2rem;
+        font-size: 1rem;
+        color: var(--text-secondary);
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .btn-primary-modern {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.875rem 1.75rem;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        font-size: 1rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        box-shadow: var(--shadow-sm);
+    }
+
+        .btn-primary-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            color: white;
+        }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .modern-admin-reports-container
+
+    {
+        padding: 1rem 0 2rem;
+    }
+
+    .header-content {
+        flex-direction: column;
+        padding: 1.5rem 2rem;
+        gap: 1rem;
+    }
+
+    .header-text h1 {
+        font-size: 1.5rem;
+        text-align: center;
+    }
+
+    .header-text p {
+        text-align: center;
+    }
+
+    .card-header-modern {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .filters-form {
+        flex-direction: column;
+    }
+
+    .filter-group {
+        width: 100%;
+    }
+
+    .filter-actions {
+        width: 100%;
+    }
+
+    .btn-filter,
+    .btn-clear {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .modern-table {
+        font-size: 0.875rem;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .btn-status-update,
+    .btn-view {
+        width: 100%;
+        justify-content: center;
+    }
+
+    }
+</style>
+
+<script>
+    // Toggle dropdown menu
+    function toggleDropdown(button) {
+        event.stopPropagation();
+        const dropdown = button.nextElementSibling;
+        const allDropdowns = document.querySelectorAll('.dropdown-menu-custom');
+
+        // Close all other dropdowns
+        allDropdowns.forEach(d => {
+            if (d !== dropdown) {
+                d.classList.remove('show');
+            }
         });
 
-        document.getElementById('status').addEventListener('change', function() {
-            this.form.submit();
-        });
+        dropdown.classList.toggle('show');
+    }
 
-        // Confirmation for status updates
-        document.querySelectorAll('form[asp-action="UpdateStatus"]').forEach(form => {
-            form.addEventListener('submit', function(e) {
-                const status = this.querySelector('input[name="status"]').value;
-                const reportId = this.querySelector('input[name="reportId"]').value;
-
-                if (!confirm(`Are you sure you want to update report #${reportId} status to "${status}"?`)) {
-                    e.preventDefault();
-                }
-            });
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function() {
+        document.querySelectorAll('.dropdown-menu-custom').forEach(dropdown => {
+            dropdown.classList.remove('show');
         });
-    </script>
+    });
+
+    // Prevent dropdown from closing when clicking inside
+    document.querySelectorAll('.dropdown-menu-custom').forEach(dropdown => {
+        dropdown.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    });
+
+    // Auto-submit form on select change
+    document.getElementById('category')?.addEventListener('change', function() {
+        this.form.submit();
+    });
+
+    document.getElementById('status')?.addEventListener('change', function() {
+        this.form.submit();
+    });
+
+    // Confirmation for status updates
+    function confirmUpdate(event, reportId, status) {
+        if (!confirm(`Are you sure you want to update report #${reportId} status to "${status}"?`)) {
+            event.preventDefault();
+            return false;
+        }
+        return true;
+    }
+</script>
+
+@functions {
+    public class StatusInfo
+    {
+        public string Background { get; set; }
+        public string Color { get; set; }
+        public string Icon { get; set; }
+    }
+
+    public StatusInfo GetStatusInfo(string status)
+    {
+        return status switch
+        {
+            "Pending" => new StatusInfo
+            {
+                Background = "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
+                Color = "white",
+                Icon = "hourglass-split"
+            },
+            "In-Progress" => new StatusInfo
+            {
+                Background = "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
+                Color = "white",
+                Icon = "arrow-repeat"
+            },
+            "Completed" => new StatusInfo
+            {
+                Background = "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                Color = "white",
+                Icon = "check-circle-fill"
+            },
+            _ => new StatusInfo
+            {
+                Background = "#6c757d",
+                Color = "white",
+                Icon = "question-circle"
+            }
+        };
+    }
 }

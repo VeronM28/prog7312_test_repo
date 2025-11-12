@@ -1,0 +1,591 @@
+﻿@model prog7212_poe_part1_V1.Models.ServiceRequestModel
+@{
+    ViewData["Title"] = "Submit Service Request";
+}
+
+<div class="modern-report-container">
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="header-content">
+                <div class="header-icon">
+                    <i class="bi bi-gear-fill"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Submit Service Request</h1>
+                    <p>Request services and assistance from your community</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Card -->
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-xl-7">
+                <div class="report-card">
+                    <div class="card-header-modern">
+                        <div class="header-icon-badge">
+                            <i class="bi bi-clipboard-check"></i>
+                        </div>
+                        <h2>Request Details</h2>
+                        <p>Please provide as much information as possible</p>
+                    </div>
+
+                    <div class="card-body-modern">
+                        <form asp-action="Create" method="post">
+                            <div asp-validation-summary="ModelOnly" class="alert-modern alert-danger mb-4">
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                <span>Please correct the errors below</span>
+                            </div>
+
+                            <!-- Title -->
+                            <div class="form-group-modern">
+                                <label asp-for="Title" class="form-label-modern">
+                                    <i class="bi bi-pencil-fill"></i>
+                                    <span>Request Title</span>
+                                    <span class="required-indicator">*</span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <input asp-for="Title" class="form-control-modern"
+                                           placeholder="Brief title for your service request" maxlength="100" />
+                                    <i class="bi bi-card-heading input-icon"></i>
+                                </div>
+                                <span asp-validation-for="Title" class="validation-message"></span>
+                            </div>
+
+                            <!-- Service Type Selection -->
+                            <div class="form-group-modern">
+                                <label asp-for="ServiceType" class="form-label-modern">
+                                    <i class="bi bi-tag-fill"></i>
+                                    <span>Service Type</span>
+                                    <span class="required-indicator">*</span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <select asp-for="ServiceType" class="form-control-modern">
+                                        <option value="">-- Select a service type --</option>
+                                        <option value="WasteCollection">Waste Collection</option>
+                                        <option value="RoadRepair">Road Repair</option>
+                                        <option value="WaterIssue">Water Issue</option>
+                                        <option value="Electricity">Electricity</option>
+                                        <option value="Sanitation">Sanitation</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <i class="bi bi-chevron-down select-icon"></i>
+                                </div>
+                                <span asp-validation-for="ServiceType" class="validation-message"></span>
+                            </div>
+
+                            <!-- Address -->
+                            <div class="form-group-modern">
+                                <label asp-for="Address" class="form-label-modern">
+                                    <i class="bi bi-geo-alt-fill"></i>
+                                    <span>Service Address</span>
+                                    <span class="required-indicator">*</span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <input asp-for="Address" class="form-control-modern"
+                                           placeholder="Enter specific address where service is needed" maxlength="500" />
+                                    <i class="bi bi-pin-map input-icon"></i>
+                                </div>
+                                <span asp-validation-for="Address" class="validation-message"></span>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="form-group-modern">
+                                <label asp-for="Description" class="form-label-modern">
+                                    <i class="bi bi-card-text"></i>
+                                    <span>Request Description</span>
+                                    <span class="required-indicator">*</span>
+                                </label>
+                                <textarea asp-for="Description" class="form-control-modern textarea-modern" rows="5"
+                                          placeholder="Please provide a detailed description of the service you need. Include any specific requirements, urgency, or additional information..." maxlength="1000"></textarea>
+                                <div class="character-count">
+                                    <i class="bi bi-info-circle"></i>
+                                    <span id="charCount">0 / 1000 characters</span>
+                                </div>
+                                <span asp-validation-for="Description" class="validation-message"></span>
+                            </div>
+
+                            <!-- Optional: GPS Coordinates -->
+                            <div class="form-group-modern">
+                                <label class="form-label-modern">
+                                    <i class="bi bi-map-fill"></i>
+                                    <span>Location Coordinates</span>
+                                    <span class="optional-badge">Optional</span>
+                                </label>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="input-wrapper">
+                                            <input asp-for="Latitude" class="form-control-modern"
+                                                   placeholder="Latitude" type="number" step="any" />
+                                            <i class="bi bi-globe input-icon"></i>
+                                        </div>
+                                        <span asp-validation-for="Latitude" class="validation-message"></span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="input-wrapper">
+                                            <input asp-for="Longitude" class="form-control-modern"
+                                                   placeholder="Longitude" type="number" step="any" />
+                                            <i class="bi bi-globe input-icon"></i>
+                                        </div>
+                                        <span asp-validation-for="Longitude" class="validation-message"></span>
+                                    </div>
+                                </div>
+                                <div class="character-count">
+                                    <i class="bi bi-info-circle"></i>
+                                    <span>Coordinates help us locate the exact service location</span>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="form-actions">
+                                <a asp-controller="Dashboard" asp-action="Index" class="btn-secondary-modern">
+                                    <i class="bi bi-arrow-left"></i>
+                                    <span>Cancel</span>
+                                </a>
+                                <button type="submit" class="btn-primary-modern">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                    <span>Submit Request</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Help Card -->
+                <div class="help-card">
+                    <div class="help-icon">
+                        <i class="bi bi-lightbulb-fill"></i>
+                    </div>
+                    <div class="help-content">
+                        <h4>Service Request Tips</h4>
+                        <ul>
+                            <li>Provide a clear, descriptive title</li>
+                            <li>Choose the most appropriate service type</li>
+                            <li>Include the exact address for service</li>
+                            <li>Describe the issue in detail (up to 1000 characters)</li>
+                            <li>Add GPS coordinates for precise location (optional)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary-color: #6366f1;
+        --primary-dark: #4f46e5;
+        --primary-light: #818cf8;
+        --secondary-color: #8b5cf6;
+        --success-color: #10b981;
+        --danger-color: #ef4444;
+        --warning-color: #f59e0b;
+        --bg-color: #f8fafc;
+        --card-bg: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --border-color: #e2e8f0;
+        --input-border: #cbd5e1;
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+        --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+        --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.12);
+    }
+
+    .modern-report-container {
+        background: var(--bg-color);
+        min-height: 100vh;
+        padding: 2rem 0 4rem;
+    }
+
+    /* Page Header */
+    .page-header {
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .header-content {
+        display: inline-flex;
+        align-items: center;
+        gap: 1.5rem;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        padding: 2rem 3rem;
+        border-radius: 1.5rem;
+        color: white;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .header-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        backdrop-filter: blur(10px);
+    }
+
+    .header-text h1 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+        text-align: left;
+    }
+
+    .header-text p {
+        margin: 0.25rem 0 0;
+        font-size: 1rem;
+        opacity: 0.95;
+        text-align: left;
+    }
+
+    /* Report Card */
+    .report-card {
+        background: var(--card-bg);
+        border-radius: 1.5rem;
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .card-header-modern {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        padding: 2rem;
+        border-bottom: 2px solid var(--border-color);
+        text-align: center;
+    }
+
+    .header-icon-badge {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        border-radius: 1rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+        color: white;
+        margin-bottom: 1rem;
+        box-shadow: var(--shadow-md);
+    }
+
+    .card-header-modern h2 {
+        margin: 0;
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .card-header-modern p {
+        margin: 0.5rem 0 0;
+        color: var(--text-secondary);
+        font-size: 1rem;
+    }
+
+    .card-body-modern {
+        padding: 2.5rem;
+    }
+
+    /* Alert Modern */
+    .alert-modern {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem 1.25rem;
+        border-radius: 0.75rem;
+        border-left: 4px solid;
+    }
+
+    .alert-danger {
+        background: #fef2f2;
+        border-left-color: var(--danger-color);
+        color: var(--danger-color);
+    }
+
+    .alert-modern i {
+        font-size: 1.25rem;
+    }
+
+    /* Form Groups */
+    .form-group-modern {
+        margin-bottom: 2rem;
+    }
+
+    .form-label-modern {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.75rem;
+        font-size: 0.95rem;
+    }
+
+        .form-label-modern i {
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+    .required-indicator {
+        color: var(--danger-color);
+        font-weight: 700;
+        margin-left: 0.25rem;
+    }
+
+    .optional-badge {
+        background: #dbeafe;
+        color: var(--primary-color);
+        padding: 0.125rem 0.5rem;
+        border-radius: 1rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 0.5rem;
+    }
+
+    /* Input Wrapper */
+    .input-wrapper {
+        position: relative;
+    }
+
+    .form-control-modern {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        padding-right: 2.5rem;
+        border: 2px solid var(--input-border);
+        border-radius: 0.75rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: white;
+        color: var(--text-primary);
+    }
+
+        .form-control-modern:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-control-modern::placeholder {
+            color: var(--text-secondary);
+        }
+
+    .textarea-modern {
+        resize: vertical;
+        min-height: 120px;
+        line-height: 1.6;
+    }
+
+    .input-icon,
+    .select-icon {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-secondary);
+        pointer-events: none;
+    }
+
+    .character-count {
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        margin-top: 0.5rem;
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+    }
+
+        .character-count i {
+            font-size: 0.875rem;
+        }
+
+    /* Validation Message */
+    .validation-message {
+        display: block;
+        color: var(--danger-color);
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        font-weight: 500;
+    }
+
+    /* Form Actions */
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-top: 2.5rem;
+        padding-top: 2rem;
+        border-top: 2px solid var(--border-color);
+    }
+
+    .btn-primary-modern,
+    .btn-secondary-modern {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.875rem 1.75rem;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        font-size: 1rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .btn-primary-modern {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        box-shadow: var(--shadow-md);
+    }
+
+        .btn-primary-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            color: white;
+        }
+
+    .btn-secondary-modern {
+        background: white;
+        color: var(--text-primary);
+        border: 2px solid var(--border-color);
+    }
+
+        .btn-secondary-modern:hover {
+            background: var(--bg-color);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+    /* Help Card */
+    .help-card {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        display: flex;
+        gap: 1.25rem;
+        box-shadow: var(--shadow-md);
+    }
+
+    .help-icon {
+        width: 48px;
+        height: 48px;
+        background: var(--warning-color);
+        border-radius: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .help-content h4 {
+        margin: 0 0 0.75rem;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .help-content ul {
+        margin: 0;
+        padding-left: 1.25rem;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        line-height: 1.8;
+    }
+
+    .help-content li {
+        margin-bottom: 0.25rem;
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .modern-report-container
+
+    {
+        padding: 1rem 0 2rem;
+    }
+
+    .header-content {
+        flex-direction: column;
+        padding: 1.5rem 2rem;
+        gap: 1rem;
+    }
+
+    .header-text h1 {
+        font-size: 1.5rem;
+        text-align: center;
+    }
+
+    .header-text p {
+        text-align: center;
+    }
+
+    .card-body-modern {
+        padding: 1.5rem;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .btn-primary-modern,
+    .btn-secondary-modern {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .help-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .help-icon {
+        margin: 0 auto;
+    }
+
+    .help-content ul {
+        text-align: left;
+    }
+
+    }
+</style>
+
+<script>
+    // Character counter for description
+    document.addEventListener('DOMContentLoaded', function() {
+        const descriptionTextarea = document.querySelector('textarea[name="Description"]');
+        const charCountSpan = document.getElementById('charCount');
+
+        if (descriptionTextarea && charCountSpan) {
+            // Update counter on input
+            descriptionTextarea.addEventListener('input', function() {
+                const currentLength = this.value.length;
+                const maxLength = 1000;
+                charCountSpan.textContent = `${currentLength} / ${maxLength} characters`;
+
+                // Change color when approaching limit
+                if (currentLength > 900) {
+                    charCountSpan.style.color = 'var(--danger-color)';
+                } else if (currentLength > 750) {
+                    charCountSpan.style.color = 'var(--warning-color)';
+                } else {
+                    charCountSpan.style.color = 'var(--text-secondary)';
+                }
+            });
+
+            // Initialize counter
+            const initialLength = descriptionTextarea.value.length;
+            charCountSpan.textContent = `${initialLength} / 1000 characters`;
+        }
+    });
+</script>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

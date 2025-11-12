@@ -1,0 +1,1164 @@
+﻿@model List<prog7212_poe_part1_V1.Models.ServiceRequestModel>
+@{
+    ViewData["Title"] = "Admin - Service Requests";
+}
+
+<div class="admin-requests-container">
+    <div class="container-fluid">
+        <!-- Header Section -->
+        <div class="page-header-admin">
+            <div class="header-content-admin">
+                <div class="header-left">
+                    <div class="header-icon-admin">
+                        <i class="bi bi-clipboard-check"></i>
+                    </div>
+                    <div class="header-text-admin">
+                        <h1>Service Request Management</h1>
+                        <p>Monitor and manage community service requests</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card stat-total">
+                <div class="stat-icon">
+                    <i class="bi bi-inbox"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">Total Requests</div>
+                    <div class="stat-value">@Model.Count()</div>
+                </div>
+            </div>
+            <div class="stat-card stat-high-priority">
+                <div class="stat-icon">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">High Priority</div>
+                    <div class="stat-value">@(ViewBag.HighPriorityRequests?.Count ?? 0)</div>
+                </div>
+            </div>
+            <div class="stat-card stat-in-progress">
+                <div class="stat-icon">
+                    <i class="bi bi-clock-history"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">In Progress</div>
+                    <div class="stat-value">@Model.Count(r => r.Status == prog7212_poe_part1_V1.Models.RequestStatus.InProgress)</div>
+                </div>
+            </div>
+            <div class="stat-card stat-completed">
+                <div class="stat-icon">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">Completed</div>
+                    <div class="stat-value">@Model.Count(r => r.Status == prog7212_poe_part1_V1.Models.RequestStatus.Completed)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alerts -->
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert-success-modern">
+                <i class="bi bi-check-circle-fill"></i>
+                <span>@TempData["SuccessMessage"]</span>
+            </div>
+        }
+
+        <!-- High Priority Requests Section -->
+        @if (ViewBag.HighPriorityRequests != null && ViewBag.HighPriorityRequests.Count > 0)
+        {
+            <div class="priority-section-card">
+                <div class="section-header">
+                    <div class="header-content">
+                        <i class="bi bi-lightning-charge"></i>
+                        <h3>High Priority Requests</h3>
+                        <span class="badge-count">@ViewBag.HighPriorityRequests.Count</span>
+                    </div>
+                    <small class="section-subtitle">Heap-based priority queue - Requires immediate attention</small>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>Request Details</th>
+                                <th>Service Type</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var request in ViewBag.HighPriorityRequests)
+                            {
+                                <tr class="request-row priority-row">
+                                    <td>
+                                        <div class="request-details-cell">
+                                            <div class="request-title-cell">@request.Title</div>
+                                            <div class="request-id-cell">
+                                                <i class="bi bi-hash"></i>
+                                                <code>@request.RequestId</code>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="service-type-badge">
+                                            <i class="bi bi-tools"></i>
+                                            @request.ServiceType
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="priority-display">
+                                            <div class="priority-bar">
+                                                <div class="priority-fill" style="width: @(Math.Min(request.PriorityScore, 200) / 2)%"></div>
+                                            </div>
+                                            <span class="priority-score high">@request.PriorityScore</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @{
+                                            var statusClass = request.Status.ToString() switch
+                                            {
+                                                "Submitted" => "status-submitted",
+                                                "In-Progress" => "status-in-progress",
+                                                "InProgress" => "status-in-progress",
+                                                "Under-Review" => "status-under-review",
+                                                "UnderReview" => "status-under-review",
+                                                "Completed" => "status-completed",
+                                                "Cancelled" => "status-cancelled",
+                                                _ => "status-default"
+                                            };
+                                        }
+                                        <span class="status-badge @statusClass">
+                                            @request.Status
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn-action btn-update"
+                                                onclick="openUpdateModal('@request.RequestId')"
+                                                title="Update Status">
+                                            <i class="bi bi-arrow-repeat"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+
+        <!-- All Requests Section -->
+        <div class="requests-table-card">
+            <div class="table-header">
+                <h3><i class="bi bi-list-ul"></i> All Service Requests</h3>
+                <div class="table-search">
+                    <i class="bi bi-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search requests..." />
+                </div>
+            </div>
+
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>Request Details</th>
+                                <th>Service Type</th>
+                                <th>Status</th>
+                                <th>Priority</th>
+                                <th>Created Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="requestsTableBody">
+                            @foreach (var request in Model.OrderByDescending(r => r.PriorityScore))
+                            {
+                                <tr class="request-row">
+                                    <td>
+                                        <div class="request-details-cell">
+                                            <div class="request-title-cell">@request.Title</div>
+                                            <div class="request-id-cell">
+                                                <i class="bi bi-hash"></i>
+                                                <code>@request.RequestId</code>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="service-type-badge">
+                                            <i class="bi bi-tools"></i>
+                                            @request.ServiceType
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @{
+                                            var statusClass = request.Status switch
+                                            {
+                                                prog7212_poe_part1_V1.Models.RequestStatus.Submitted => "status-submitted",
+                                                prog7212_poe_part1_V1.Models.RequestStatus.InProgress => "status-in-progress",
+                                                prog7212_poe_part1_V1.Models.RequestStatus.UnderReview => "status-under-review",
+                                                prog7212_poe_part1_V1.Models.RequestStatus.Completed => "status-completed",
+                                                prog7212_poe_part1_V1.Models.RequestStatus.Cancelled => "status-cancelled",
+                                                _ => "status-default"
+                                            };
+                                        }
+                                        <span class="status-badge @statusClass">
+                                            @request.Status
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="priority-display">
+                                            <div class="priority-bar">
+                                                <div class="priority-fill @(request.PriorityScore > 150 ? "high" : request.PriorityScore > 100 ? "medium" : "low")"
+                                                     style="width: @(Math.Min(request.PriorityScore, 200) / 2)%"></div>
+                                            </div>
+                                            <span class="priority-score @(request.PriorityScore > 150 ? "high" : request.PriorityScore > 100 ? "medium" : "low")">
+                                                @request.PriorityScore
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="date-cell">
+                                            <div class="date-main">@request.CreatedDate.ToString("MMM dd, yyyy")</div>
+                                            <div class="time-sub">@request.CreatedDate.ToString("h:mm tt")</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn-action btn-update"
+                                                onclick="openUpdateModal('@request.RequestId')"
+                                                title="Update Status">
+                                            <i class="bi bi-arrow-repeat"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="no-requests-state">
+                    <div class="empty-icon">
+                        <i class="bi bi-inbox"></i>
+                    </div>
+                    <h3>No Service Requests</h3>
+                    <p>All service requests will appear here</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Update Status Modals -->
+@foreach (var request in Model)
+{
+    <div class="modal-overlay custom-modal" id="updateModal-@request.RequestId">
+        <div class="modal-content" onclick="event.stopPropagation();">
+            <form asp-action="UpdateServiceRequestStatus" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-header-update">
+                    <i class="bi bi-arrow-repeat"></i>
+                    <h3>Update Request Status</h3>
+                    <button type="button" class="btn-close-modal" onclick="closeUpdateModal('@request.RequestId'); return false;">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="requestId" value="@request.RequestId" />
+
+                    <div class="modal-info-section">
+                        <div class="info-row">
+                            <span class="info-label">Request ID:</span>
+                            <code class="info-value">@request.RequestId</code>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Title:</span>
+                            <span class="info-value">@request.Title</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group-modern">
+                        <label class="form-label-modern">
+                            Current Status
+                            <span class="status-badge @(request.Status switch
+                                  {
+                                      prog7212_poe_part1_V1.Models.RequestStatus.Submitted => "status-submitted",
+                                      prog7212_poe_part1_V1.Models.RequestStatus.InProgress => "status-in-progress",
+                                      prog7212_poe_part1_V1.Models.RequestStatus.UnderReview => "status-under-review",
+                                      prog7212_poe_part1_V1.Models.RequestStatus.Completed => "status-completed",
+                                      prog7212_poe_part1_V1.Models.RequestStatus.Cancelled => "status-cancelled",
+                                      _ => "status-default"
+                                  })">@request.Status</span>
+                    </label>
+                    <select name="newStatus" class="form-control-modern" required>
+                        <option value="">Select New Status</option>
+                        <option value="@prog7212_poe_part1_V1.Models.RequestStatus.Submitted">Submitted</option>
+                        <option value="@prog7212_poe_part1_V1.Models.RequestStatus.InProgress">In Progress</option>
+                        <option value="@prog7212_poe_part1_V1.Models.RequestStatus.UnderReview">Under Review</option>
+                        <option value="@prog7212_poe_part1_V1.Models.RequestStatus.Completed">Completed</option>
+                        <option value="@prog7212_poe_part1_V1.Models.RequestStatus.Cancelled">Cancelled</option>
+                    </select>
+                </div>
+
+                    <div class="form-group-modern">
+                        <label class="form-label-modern">Admin Notes</label>
+                        <textarea name="adminNotes" class="form-control-modern" rows="4" placeholder="Add any notes or comments...">@request.AdminNotes</textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeUpdateModal('@request.RequestId'); return false;">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn-confirm-update">
+                        <i class="bi bi-check-circle"></i>
+                        Update Status
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+
+<style>
+    :root {
+        --primary-color: #6366f1;
+        --primary-dark: #4f46e5;
+        --secondary-color: #8b5cf6;
+        --success-color: #10b981;
+        --danger-color: #ef4444;
+        --warning-color: #f59e0b;
+        --info-color: #3b82f6;
+        --bg-color: #f8fafc;
+        --card-bg: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --border-color: #e2e8f0;
+    }
+
+    .admin-requests-container {
+        background: var(--bg-color);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    /* Header */
+    .page-header-admin {
+        margin-bottom: 2rem;
+    }
+
+    .header-content-admin {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        padding: 2rem;
+        border-radius: 1.5rem;
+        color: white;
+        box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .header-icon-admin {
+        width: 60px;
+        height: 60px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        backdrop-filter: blur(10px);
+    }
+
+    .header-text-admin h1 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+    }
+
+    .header-text-admin p {
+        margin: 0.25rem 0 0;
+        opacity: 0.95;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+        color: white;
+    }
+
+    .stat-total .stat-icon {
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
+    }
+
+    .stat-high-priority .stat-icon {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+
+    .stat-in-progress .stat-icon {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    .stat-completed .stat-icon {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .stat-content {
+        flex: 1;
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        line-height: 1.2;
+    }
+
+    /* Alerts */
+    .alert-success-modern {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem 1.5rem;
+        border-radius: 0.75rem;
+        margin-bottom: 1.5rem;
+        font-weight: 500;
+        background: #d1fae5;
+        color: #065f46;
+        border-left: 4px solid var(--success-color);
+    }
+
+    /* Priority Section */
+    .priority-section-card {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        border-radius: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        margin-bottom: 2rem;
+        border: 2px solid var(--warning-color);
+    }
+
+    .section-header {
+        padding: 1.5rem 2rem;
+        border-bottom: 2px solid rgba(217, 119, 6, 0.2);
+    }
+
+    .header-content {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        color: #92400e;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+        .header-content i {
+            font-size: 1.75rem;
+        }
+
+        .header-content h3 {
+            margin: 0;
+        }
+
+    .badge-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--danger-color);
+        color: white;
+        min-width: 32px;
+        height: 32px;
+        border-radius: 1rem;
+        font-size: 0.875rem;
+        font-weight: 700;
+        padding: 0 0.75rem;
+    }
+
+    .section-subtitle {
+        color: #92400e;
+        font-size: 0.875rem;
+        opacity: 0.9;
+    }
+
+    .priority-row {
+        background: rgba(255, 255, 255, 0.8) !important;
+    }
+
+        .priority-row:hover {
+            background: rgba(255, 255, 255, 0.95) !important;
+        }
+
+    /* Table Card */
+    .requests-table-card {
+        background: white;
+        border-radius: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
+
+    .table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem 2rem;
+        border-bottom: 2px solid var(--border-color);
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    }
+
+        .table-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+    .table-search {
+        position: relative;
+    }
+
+        .table-search i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .table-search input {
+            padding: 0.625rem 1rem 0.625rem 2.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 0.95rem;
+            width: 300px;
+            transition: all 0.3s ease;
+        }
+
+            .table-search input:focus {
+                outline: none;
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            }
+
+    /* Table */
+    .modern-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .modern-table thead {
+            background: #f8fafc;
+        }
+
+        .modern-table th {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .modern-table td {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+    .request-row:hover {
+        background: #f8fafc;
+    }
+
+    .request-details-cell {
+        max-width: 350px;
+    }
+
+    .request-title-cell {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .request-id-cell {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+        .request-id-cell code {
+            background: #f1f5f9;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.8rem;
+            color: var(--primary-color);
+        }
+
+    .service-type-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        color: var(--info-color);
+        border-radius: 1rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+
+    .date-cell {
+        white-space: nowrap;
+    }
+
+    .date-main {
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .time-sub {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin-top: 0.25rem;
+    }
+
+    /* Status Badges */
+    .status-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 1rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .status-submitted {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .status-in-progress {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .status-under-review {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+
+    .status-completed {
+        background: #e0e7ff;
+        color: #3730a3;
+    }
+
+    .status-cancelled {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .status-default {
+        background: #f1f5f9;
+        color: #64748b;
+    }
+
+    /* Priority Display */
+    .priority-display {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .priority-bar {
+        flex: 1;
+        height: 10px;
+        background: #f1f5f9;
+        border-radius: 1rem;
+        overflow: hidden;
+        max-width: 100px;
+    }
+
+    .priority-fill {
+        height: 100%;
+        transition: width 0.3s ease;
+        border-radius: 1rem;
+    }
+
+        .priority-fill.high {
+            background: linear-gradient(90deg, var(--danger-color), #dc2626);
+        }
+
+        .priority-fill.medium {
+            background: linear-gradient(90deg, var(--warning-color), #d97706);
+        }
+
+        .priority-fill.low {
+            background: linear-gradient(90deg, var(--info-color), #2563eb);
+        }
+
+    .priority-score {
+        font-weight: 700;
+        font-size: 0.875rem;
+        min-width: 45px;
+        text-align: right;
+    }
+
+        .priority-score.high {
+            color: var(--danger-color);
+        }
+
+        .priority-score.medium {
+            color: var(--warning-color);
+        }
+
+        .priority-score.low {
+            color: var(--info-color);
+        }
+
+    /* Action Buttons */
+    .btn-action {
+        width: 36px;
+        height: 36px;
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        font-size: 1rem;
+    }
+
+    .btn-update {
+        background: #dbeafe;
+        color: var(--info-color);
+    }
+
+        .btn-update:hover {
+            background: #bfdbfe;
+            transform: scale(1.1);
+        }
+
+    /* Empty State */
+    .no-requests-state {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        color: var(--border-color);
+        margin-bottom: 1.5rem;
+    }
+
+    .no-requests-state h3 {
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .no-requests-state p {
+        color: var(--text-secondary);
+    }
+
+    /* Modal */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+    }
+
+        .modal-overlay.active {
+            display: flex !important;
+        }
+
+        /* Prevent Bootstrap modal conflicts */
+        .modal-overlay .modal-content {
+            position: relative;
+            margin: auto;
+        }
+
+    .modal-content {
+        background: white;
+        border-radius: 1rem;
+        max-width: 600px;
+        width: 90%;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        animation: modalSlideIn 0.3s ease;
+        max-height: 90vh;
+        overflow-y: auto;
+        position: relative;
+        z-index: 10000;
+    }
+
+    @@keyframes modalSlideIn {
+        from
+
+    {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    }
+
+    .modal-header-update {
+        padding: 2rem;
+        text-align: center;
+        border-bottom: 2px solid var(--border-color);
+        position: relative;
+    }
+
+        .modal-header-update i:first-child {
+            font-size: 3rem;
+            color: var(--info-color);
+            margin-bottom: 1rem;
+        }
+
+        .modal-header-update h3 {
+            margin: 0;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+        }
+
+    .btn-close-modal {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 32px;
+        height: 32px;
+        border: none;
+        background: #f1f5f9;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        color: var(--text-secondary);
+    }
+
+        .btn-close-modal:hover {
+            background: #e2e8f0;
+            color: var(--text-primary);
+        }
+
+    .modal-body {
+        padding: 2rem;
+    }
+
+    .modal-info-section {
+        background: #f8fafc;
+        padding: 1.25rem;
+        border-radius: 0.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .info-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+
+        .info-row:last-child {
+            margin-bottom: 0;
+        }
+
+    .info-label {
+        font-weight: 600;
+        color: var(--text-secondary);
+        min-width: 100px;
+    }
+
+    .info-value {
+        color: var(--text-primary);
+        font-weight: 500;
+    }
+
+        .info-value code {
+            background: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            color: var(--primary-color);
+            border: 1px solid var(--border-color);
+        }
+
+    .form-group-modern {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label-modern {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    .form-control-modern {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--border-color);
+        border-radius: 0.5rem;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        font-family: inherit;
+    }
+
+        .form-control-modern:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+    textarea.form-control-modern {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .modal-footer {
+        padding: 1.5rem 2rem;
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        background: #f8fafc;
+        border-radius: 0 0 1rem 1rem;
+    }
+
+    .btn-cancel,
+    .btn-confirm-update {
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .btn-cancel {
+        background: white;
+        color: var(--text-primary);
+        border: 2px solid var(--border-color);
+    }
+
+        .btn-cancel:hover {
+            background: var(--bg-color);
+        }
+
+    .btn-confirm-update {
+        background: var(--info-color);
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .btn-confirm-update:hover {
+            background: #2563eb;
+        }
+
+    /* Responsive */
+    @@media (max-width: 1200px) {
+        .modern-table
+
+    {
+        font-size: 0.875rem;
+    }
+
+    }
+
+    @@media (max-width: 768px) {
+        .header-content-admin
+
+    {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .header-left {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .header-text-admin h1 {
+        font-size: 1.5rem;
+    }
+
+    .table-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .table-search input {
+        width: 100%;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .modern-table {
+        min-width: 800px;
+    }
+
+    .modal-content {
+        width: 95%;
+    }
+
+    }
+</style>
+
+<script>
+    // Prevent Bootstrap from interfering with custom modals
+    document.addEventListener('DOMContentLoaded', function () {
+        // Remove any Bootstrap modal classes that might interfere
+        document.querySelectorAll('.custom-modal').forEach(function(modal) {
+            modal.classList.remove('modal', 'fade');
+        });
+
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function () {
+                const searchTerm = this.value.toLowerCase();
+                const rows = document.querySelectorAll('#requestsTableBody tr');
+
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(searchTerm) ? '' : 'none';
+                });
+            });
+        }
+
+        // Form submission handling
+        const forms = document.querySelectorAll('form[asp-action="UpdateServiceRequestStatus"]');
+        forms.forEach(form => {
+            form.addEventListener('submit', function (e) {
+                const submitBtn = this.querySelector('.btn-confirm-update');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Updating...';
+                }
+            });
+        });
+    });
+
+    // Modal functions
+    function openUpdateModal(requestId) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const modal = document.getElementById('updateModal-' + requestId);
+        if (modal) {
+            // Close any other open modals first
+            document.querySelectorAll('.modal-overlay.active').forEach(function(m) {
+                m.classList.remove('active');
+            });
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        return false;
+    }
+
+    function closeUpdateModal(requestId) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const modal = document.getElementById('updateModal-' + requestId);
+        if (modal) {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        return false;
+    }
+
+    // Close modal on overlay click
+    document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('modal-overlay') && e.target.classList.contains('custom-modal')) {
+            e.target.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            const activeModal = document.querySelector('.modal-overlay.active');
+            if (activeModal) {
+                activeModal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+    });
+</script>

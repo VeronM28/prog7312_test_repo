@@ -1,109 +1,354 @@
 ﻿@model prog7212_poe_part1_V1.ViewModels.LoginViewModel
-
-<style>
-    /* Body font */
-    body {
-        font-family: 'Inter', sans-serif;
-        background: url('/images/park.jpg') no-repeat center center fixed;
-        background-size: cover;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    /* Card styling */
-    .login-card {
-        background-color: #ffffff;
-        border-radius: 15px;
-        padding: 2.5rem 2rem;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-        max-width: 400px;
-        width: 100%;
-        color: #333;
-        text-align: left;
-    }
-
-        /* Form inputs */
-        .login-card input.form-control {
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            padding: 0.6rem;
-            margin-top: 0.3rem;
-            transition: all 0.3s ease;
-        }
-
-            .login-card input.form-control:focus {
-                border-color: #4CAF50;
-                box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
-                outline: none;
-            }
-
-        /* Button styling */
-        .login-card .btn-primary {
-            background-color: #4CAF50;
-            border: none;
-            border-radius: 10px;
-            padding: 0.6rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-            .login-card .btn-primary:hover {
-                background-color: #45a049;
-                box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-                transform: translateY(-2px);
-            }
-
-    /* Validation text */
-    .text-danger {
-        font-size: 0.9rem;
-    }
-
-    /* Links */
-    .login-card a {
-        color: #4CAF50;
-        text-decoration: none;
-        font-weight: 500;
-    }
-
-        .login-card a:hover {
-            text-decoration: underline;
-        }
-
-</style>
-
 @{
     ViewData["Title"] = "Login";
 }
 
 <!-- Import Google Font -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --primary-color: #6366f1;
+        --primary-dark: #4f46e5;
+        --secondary-color: #8b5cf6;
+        --success-color: #10b981;
+        --danger-color: #ef4444;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --border-color: #e2e8f0;
+    }
+
+    * {
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Fixed Background */
+    body {
+        position: relative;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('/images/park.jpg') no-repeat center center;
+            background-size: cover;
+            z-index: -1;
+        }
+
+    /* Login Page Container */
+    .login-page {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    /* Modern Login Card */
+    .login-card {
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 1.5rem;
+        padding: 3rem 2.5rem;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        backdrop-filter: blur(20px);
+        max-width: 450px;
+        width: 100%;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        animation: slideUp 0.5s ease;
+    }
+
+    @@keyframes slideUp {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    /* Header Section */
+    .login-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+
+    .login-icon {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border-radius: 1.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+    }
+
+        .login-icon i {
+            font-size: 2rem;
+            color: white;
+        }
+
+    .login-card h2 {
+        color: var(--text-primary);
+        font-weight: 700;
+        font-size: 1.875rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .login-subtitle {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        font-weight: 500;
+    }
+
+    /* Validation Summary */
+    .validation-summary {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.05));
+        border-left: 4px solid var(--danger-color);
+        border-radius: 0.75rem;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+
+        .validation-summary ul {
+            margin: 0;
+            padding-left: 1.25rem;
+            color: var(--danger-color);
+            font-weight: 500;
+        }
+
+    /* Form Groups */
+    .form-group-modern {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label-modern {
+        display: block;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        pointer-events: none;
+        transition: color 0.3s ease;
+    }
+
+    .form-control-modern {
+        width: 100%;
+        padding: 0.875rem 1rem 0.875rem 3rem;
+        border: 2px solid var(--border-color);
+        border-radius: 0.75rem;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        background: white;
+        color: var(--text-primary);
+    }
+
+        .form-control-modern:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+            .form-control-modern:focus + .input-icon {
+                color: var(--primary-color);
+            }
+
+        .form-control-modern::placeholder {
+            color: #94a3b8;
+        }
+
+    /* Validation Messages */
+    .field-validation-error {
+        display: block;
+        color: var(--danger-color);
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        font-weight: 500;
+    }
+
+    /* Submit Button */
+    .btn-login {
+        width: 100%;
+        padding: 0.875rem;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border: none;
+        border-radius: 0.75rem;
+        color: white;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        margin-top: 0.5rem;
+    }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+    /* Divider */
+    .divider {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        margin: 1.5rem 0;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+    }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .divider span {
+            padding: 0 1rem;
+        }
+
+    /* Register Link */
+    .register-link {
+        text-align: center;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-color);
+    }
+
+        .register-link p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .register-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+            .register-link a:hover {
+                color: var(--primary-dark);
+                text-decoration: underline;
+            }
+
+    /* Responsive */
+    @@media (max-width: 576px) {
+        .login-card
+
+    {
+        padding: 2rem 1.5rem;
+    }
+
+    .login-card h2 {
+        font-size: 1.5rem;
+    }
+
+    .login-icon {
+        width: 60px;
+        height: 60px;
+    }
+
+        .login-icon i {
+            font-size: 1.75rem;
+        }
+
+    }
+</style>
 
 <div class="login-page">
     <div class="login-card">
-        <h2 class="text-center mb-4">Login</h2>
+        <!-- Header -->
+        <div class="login-header">
+            <div class="login-icon">
+                <i class="bi bi-shield-lock"></i>
+            </div>
+            <h2>Welcome Back</h2>
+            <p class="login-subtitle">Sign in to access your account</p>
+        </div>
 
+        <!-- Login Form -->
         <form asp-action="Login" method="post">
-            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+            <!-- Validation Summary -->
+            @if (ViewData.ModelState.ErrorCount > 0)
+            {
+                <div class="validation-summary">
+                    <div asp-validation-summary="All"></div>
+                </div>
+            }
 
-            <div class="mb-3">
-                <label asp-for="Email" class="form-label">Email</label>
-                <input asp-for="Email" class="form-control" placeholder="Enter your email" />
-                <span asp-validation-for="Email" class="text-danger"></span>
+            <!-- Email Field -->
+            <div class="form-group-modern">
+                <label asp-for="Email" class="form-label-modern">Email Address</label>
+                <div class="input-wrapper">
+                    <input asp-for="Email" class="form-control-modern" placeholder="Enter your email" />
+                    <i class="bi bi-envelope input-icon"></i>
+                </div>
+                <span asp-validation-for="Email" class="field-validation-error"></span>
             </div>
 
-            <div class="mb-3">
-                <label asp-for="Password" class="form-label">Password</label>
-                <input asp-for="Password" type="password" class="form-control" placeholder="Enter your password" />
-                <span asp-validation-for="Password" class="text-danger"></span>
+            <!-- Password Field -->
+            <div class="form-group-modern">
+                <label asp-for="Password" class="form-label-modern">Password</label>
+                <div class="input-wrapper">
+                    <input asp-for="Password" type="password" class="form-control-modern" placeholder="Enter your password" />
+                    <i class="bi bi-lock input-icon"></i>
+                </div>
+                <span asp-validation-for="Password" class="field-validation-error"></span>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100">Login</button>
+            <!-- Submit Button -->
+            <button type="submit" class="btn-login">
+                <i class="bi bi-box-arrow-in-right"></i>
+                Sign In
+            </button>
 
-            <p class="text-center mt-3">
-                Don't have an account? <a asp-controller="Account" asp-action="Register">Register</a>.
-            </p>
+            <!-- Register Link -->
+            <div class="register-link">
+                <p>
+                    Don't have an account?
+                    <a asp-controller="Account" asp-action="Register">Create one now</a>
+                </p>
+            </div>
         </form>
     </div>
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

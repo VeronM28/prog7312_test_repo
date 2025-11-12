@@ -4,231 +4,1068 @@
     ViewData["Title"] = "Admin Dashboard";
 }
 
-<div class="container-fluid py-4">
-    <!-- Statistics Cards -->
-    <div class="row mb-4">
-        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-            <div class="card">
-                <div class="card-body p-3">
-                    <div class="row">
-                        <div class="col-8">
-                            <div class="numbers">
-                                <p class="text-sm mb-0 text-capitalize font-weight-bold">Total Reports</p>
-                                <h5 class="font-weight-bolder mb-0">@Model.TotalReports</h5>
-                            </div>
-                        </div>
-                        <div class="col-4 text-end">
-                            <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
-                                <i class="ni ni-paper-diploma text-lg opacity-10"></i>
-                            </div>
-                        </div>
-                    </div>
+<div class="modern-admin-container">
+    <div class="container-fluid">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="header-content">
+                <div class="header-icon">
+                    <i class="bi bi-speedometer2"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Admin Dashboard</h1>
+                    <p>Monitor and manage all reports and service requests</p>
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-            <div class="card">
-                <div class="card-body p-3">
-                    <div class="row">
-                        <div class="col-8">
-                            <div class="numbers">
-                                <p class="text-sm mb-0 text-capitalize font-weight-bold">Pending</p>
-                                <h5 class="font-weight-bolder mb-0 text-warning">@Model.PendingReports</h5>
-                            </div>
-                        </div>
-                        <div class="col-4 text-end">
-                            <div class="icon icon-shape bg-gradient-warning shadow text-center border-radius-md">
-                                <i class="ni ni-time-alarm text-lg opacity-10"></i>
-                            </div>
-                        </div>
-                    </div>
+        <!-- Reports Statistics -->
+        <div class="section-header">
+            <h2><i class="bi bi-file-earmark-text"></i> Reports Overview</h2>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);">
+                    <i class="bi bi-collection"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value">@Model.TotalReports</div>
+                    <div class="stat-label">Total Reports</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                    <i class="bi bi-hourglass-split"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value">@Model.PendingReports</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);">
+                    <i class="bi bi-arrow-repeat"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value">@Model.InProgressReports</div>
+                    <div class="stat-label">In Progress</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value">@Model.CompletedReports</div>
+                    <div class="stat-label">Completed</div>
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-            <div class="card">
-                <div class="card-body p-3">
-                    <div class="row">
-                        <div class="col-8">
-                            <div class="numbers">
-                                <p class="text-sm mb-0 text-capitalize font-weight-bold">In Progress</p>
-                                <h5 class="font-weight-bolder mb-0 text-info">@Model.InProgressReports</h5>
-                            </div>
-                        </div>
-                        <div class="col-4 text-end">
-                            <div class="icon icon-shape bg-gradient-info shadow text-center border-radius-md">
-                                <i class="ni ni-settings text-lg opacity-10"></i>
-                            </div>
-                        </div>
-                    </div>
+        <!-- Service Requests Statistics -->
+        <div class="section-header">
+            <h2><i class="bi bi-gear"></i> Service Requests Overview</h2>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
+                    <i class="bi bi-list-check"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value">@Model.TotalServiceRequests</div>
+                    <div class="stat-label">Total Requests</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);">
+                    <i class="bi bi-send-check"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value">@Model.SubmittedServiceRequests</div>
+                    <div class="stat-label">Submitted</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value">@Model.InProgressServiceRequests</div>
+                    <div class="stat-label">In Progress</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                    <i class="bi bi-check-all"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value">@Model.CompletedServiceRequests</div>
+                    <div class="stat-label">Completed</div>
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-3 col-sm-6">
-            <div class="card">
-                <div class="card-body p-3">
-                    <div class="row">
-                        <div class="col-8">
-                            <div class="numbers">
-                                <p class="text-sm mb-0 text-capitalize font-weight-bold">Completed</p>
-                                <h5 class="font-weight-bolder mb-0 text-success">@Model.CompletedReports</h5>
-                            </div>
-                        </div>
-                        <div class="col-4 text-end">
-                            <div class="icon icon-shape bg-gradient-success shadow text-center border-radius-md">
-                                <i class="ni ni-check-bold text-lg opacity-10"></i>
-                            </div>
-                        </div>
-                    </div>
+        <!-- Priority & Performance Statistics -->
+        <div class="stats-grid-3">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value">@Model.HighPriorityServiceRequests</div>
+                    <div class="stat-label">High Priority</div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <div class="row">
-        <!-- Recent Reports -->
-        <div class="col-lg-8 mb-4">
-            <div class="card">
-                <div class="card-header pb-0">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h6>Recent Reports</h6>
-                        <a href="@Url.Action("Reports")" class="btn btn-outline-primary btn-sm">View All</a>
-                    </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                    <i class="bi bi-dash-circle"></i>
                 </div>
-                <div class="card-body px-0 pt-0 pb-2">
-                    @if (Model.RecentReports.Any())
-                    {
-                        <div class="table-responsive p-0">
-                            <table class="table align-items-center mb-0">
-                                <thead>
-                                    <tr>
-                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Report</th>
-                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Status</th>
-                                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date</th>
-                                        <th class="text-secondary opacity-7"></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var report in Model.RecentReports)
-                                    {
-                                        <tr>
-                                            <td>
-                                                <div class="d-flex px-2 py-1">
-                                                    <div class="d-flex flex-column justify-content-center">
-                                                        <h6 class="mb-0 text-sm">#@report.Id - @report.Category</h6>
-                                                        <p class="text-xs text-secondary mb-0">@report.Location</p>
-                                                        <p class="text-xs text-secondary mb-0">by @(report.User?.UserName ?? "Unknown")</p>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                @{
-                                                    string statusClass = report.Status switch
-                                                    {
-                                                        "Pending" => "bg-gradient-warning",
-                                                        "In-Progress" => "bg-gradient-info",
-                                                        "Completed" => "bg-gradient-success",
-                                                        _ => "bg-gradient-secondary"
-                                                    };
-                                                }
-                                                <span class="badge badge-sm @statusClass">@report.Status</span>
-                                            </td>
-                                            <td class="align-middle text-center text-sm">
-                                                <span class="text-xs font-weight-bold">@report.DateSubmitted.ToString("MMM dd, yyyy")</span>
-                                            </td>
-                                            <td class="align-middle">
-                                                <a href="@Url.Action("ReportDetails", new { id = report.Id })"
-                                                   class="text-secondary font-weight-bold text-xs">
-                                                    View
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="text-center py-4">
-                            <p class="text-muted">No reports found.</p>
-                        </div>
-                    }
+                <div class="stat-info">
+                    <div class="stat-value">@Model.MediumPriorityServiceRequests</div>
+                    <div class="stat-label">Medium Priority</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                    <i class="bi bi-graph-up-arrow"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value">@Model.CompletionRate.ToString("F1")%</div>
+                    <div class="stat-label">Completion Rate</div>
                 </div>
             </div>
         </div>
 
-        <!-- Category Statistics -->
-        <div class="col-lg-4 mb-4">
-            <div class="card">
-                <div class="card-header pb-0">
-                    <h6>Reports by Category</h6>
-                </div>
-                <div class="card-body p-3">
-                    @if (Model.CategoryStatistics.Any())
-                    {
-                        @foreach (var stat in Model.CategoryStatistics)
+        <!-- Recent Activity Section -->
+        <div class="row">
+            <!-- Recent Reports -->
+            <div class="col-lg-6 mb-4">
+                <div class="data-card">
+                    <div class="card-header-modern">
+                        <div class="header-left">
+                            <h3><i class="bi bi-file-text"></i> Recent Reports</h3>
+                            <p>Latest report submissions</p>
+                        </div>
+                        <a href="@Url.Action("Reports")" class="btn-view-all">
+                            <span>View All</span>
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                    <div class="card-body-modern">
+                        @if (Model.RecentReports.Any())
                         {
-                            var percentage = Model.TotalReports > 0 ? (double)stat.Count / Model.TotalReports * 100 : 0;
-                            <div class="mb-3">
-                                <div class="d-flex justify-content-between">
-                                    <span class="text-sm font-weight-bold">@stat.Category</span>
-                                    <span class="text-sm">@stat.Count (@percentage.ToString("F1")%)</span>
-                                </div>
-                                <div class="progress">
-                                    <div class="progress-bar bg-gradient-info" role="progressbar"
-                                         style="width: @percentage.ToString("F1")%"
-                                         aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
+                            <div class="activity-list">
+                                @foreach (var report in Model.RecentReports)
+                                {
+                                    <div class="activity-item">
+                                        <div class="activity-icon" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);">
+                                            <i class="bi bi-file-earmark"></i>
+                                        </div>
+                                        <div class="activity-content">
+                                            <div class="activity-header">
+                                                <h4>#@report.Id - @report.Category</h4>
+                                                @{
+                                                    var statusInfo = GetReportStatusInfo(report.Status);
+                                                }
+                                                <span class="status-badge" style="background: @statusInfo.Background; color: @statusInfo.Color;">
+                                                    <i class="bi bi-@statusInfo.Icon"></i>
+                                                    @report.Status
+                                                </span>
+                                            </div>
+                                            <div class="activity-details">
+                                                <span class="detail-item">
+                                                    <i class="bi bi-geo-alt"></i>
+                                                    @report.Location
+                                                </span>
+                                                <span class="detail-item">
+                                                    <i class="bi bi-person"></i>
+                                                    @(report.User?.UserName ?? "Unknown")
+                                                </span>
+                                                <span class="detail-item">
+                                                    <i class="bi bi-calendar"></i>
+                                                    @report.DateSubmitted.ToString("MMM dd, yyyy")
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <a href="@Url.Action("ReportDetails", new { id = report.Id })" class="btn-action">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </div>
+                                }
                             </div>
                         }
-                    }
-                    else
-                    {
-                        <div class="text-center py-4">
-                            <p class="text-muted">No data available.</p>
+                        else
+                        {
+                            <div class="empty-state-small">
+                                <i class="bi bi-inbox"></i>
+                                <p>No reports found</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Service Requests -->
+            <div class="col-lg-6 mb-4">
+                <div class="data-card">
+                    <div class="card-header-modern">
+                        <div class="header-left">
+                            <h3><i class="bi bi-clipboard-check"></i> Recent Service Requests</h3>
+                            <p>Latest service submissions</p>
                         </div>
-                    }
+                        <a href="@Url.Action("ServiceRequests", "Admin")" class="btn-view-all">
+                            <span>View All</span>
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                    <div class="card-body-modern">
+                        @if (Model.RecentServiceRequests.Any())
+                        {
+                            <div class="activity-list">
+                                @foreach (var request in Model.RecentServiceRequests)
+                                {
+                                    <div class="activity-item">
+                                        <div class="activity-icon" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
+                                            <i class="bi bi-gear"></i>
+                                        </div>
+                                        <div class="activity-content">
+                                            <div class="activity-header">
+                                                <h4>@request.Title</h4>
+                                                @{
+                                                    var srStatusInfo = GetServiceRequestStatusInfo(request.Status);
+                                                }
+                                                <span class="status-badge" style="background: @srStatusInfo.Background; color: @srStatusInfo.Color;">
+                                                    <i class="bi bi-@srStatusInfo.Icon"></i>
+                                                    @request.Status
+                                                </span>
+                                            </div>
+                                            <div class="activity-details">
+                                                <span class="detail-item">
+                                                    <i class="bi bi-tag"></i>
+                                                    @request.ServiceType
+                                                </span>
+                                                @{
+                                                    var priorityBadge = GetPriorityBadge(request.PriorityScore);
+                                                }
+                                                <span class="priority-badge" style="background: @priorityBadge.Background; color: @priorityBadge.Color;">
+                                                    <i class="bi bi-@priorityBadge.Icon"></i>
+                                                    Priority: @request.PriorityScore
+                                                </span>
+                                                <span class="detail-item">
+                                                    <i class="bi bi-calendar"></i>
+                                                    @request.CreatedDate.ToString("MMM dd, yyyy")
+                                                </span>
+                                            </div>
+                                            <div class="request-id">
+                                                <i class="bi bi-hash"></i>
+                                                @request.RequestId.Substring(0, 8)
+                                            </div>
+                                        </div>
+                                        <a href="@Url.Action("ServiceRequestDetails", "Admin", new { id = request.RequestId })" class="btn-action">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="empty-state-small">
+                                <i class="bi bi-inbox"></i>
+                                <p>No service requests found</p>
+                            </div>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Quick Actions -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header pb-0">
-                    <h6>Quick Actions</h6>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-3 mb-3">
-                            <a href="@Url.Action("Reports", new { status = "Pending" })" class="btn btn-warning btn-block">
-                                <i class="fas fa-clock"></i> View Pending Reports
-                            </a>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <a href="@Url.Action("Reports", new { status = "In-Progress" })" class="btn btn-info btn-block">
-                                <i class="fas fa-spinner"></i> View In-Progress Reports
-                            </a>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <a href="@Url.Action("Reports", new { status = "Completed" })" class="btn btn-success btn-block">
-                                <i class="fas fa-check"></i> View Completed Reports
-                            </a>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <a href="@Url.Action("Reports")" class="btn btn-primary btn-block">
-                                <i class="fas fa-list"></i> View All Reports
-                            </a>
+        <!-- Analytics Charts -->
+        <div class="row">
+            <!-- Reports by Category -->
+            <div class="col-lg-6 mb-4">
+                <div class="data-card">
+                    <div class="card-header-modern">
+                        <div class="header-left">
+                            <h3><i class="bi bi-pie-chart"></i> Reports by Category</h3>
+                            <p>Distribution of report categories</p>
                         </div>
                     </div>
+                    <div class="card-body-modern">
+                        @if (Model.CategoryStatistics.Any())
+                        {
+                            <div class="chart-container">
+                                @foreach (var stat in Model.CategoryStatistics)
+                                {
+                                    var percentage = Model.TotalReports > 0 ? (double)stat.Count / Model.TotalReports * 100 : 0;
+                                    <div class="chart-item">
+                                        <div class="chart-label">
+                                            <span class="label-text">@stat.Category</span>
+                                            <span class="label-value">@stat.Count <small>(@percentage.ToString("F1")%)</small></span>
+                                        </div>
+                                        <div class="progress-bar-container">
+                                            <div class="progress-bar-fill" style="width: @percentage.ToString("F1")%; background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);"></div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="empty-state-small">
+                                <i class="bi bi-graph-down"></i>
+                                <p>No data available</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Service Requests by Type -->
+            <div class="col-lg-6 mb-4">
+                <div class="data-card">
+                    <div class="card-header-modern">
+                        <div class="header-left">
+                            <h3><i class="bi bi-bar-chart"></i> Service Requests by Type</h3>
+                            <p>Distribution of service types</p>
+                        </div>
+                    </div>
+                    <div class="card-body-modern">
+                        @if (Model.ServiceTypeStatistics.Any())
+                        {
+                            <div class="chart-container">
+                                @foreach (var stat in Model.ServiceTypeStatistics)
+                                {
+                                    var percentage = Model.TotalServiceRequests > 0 ? (double)stat.Count / Model.TotalServiceRequests * 100 : 0;
+                                    <div class="chart-item">
+                                        <div class="chart-label">
+                                            <span class="label-text">@stat.ServiceTypeDisplayName</span>
+                                            <span class="label-value">@stat.Count <small>(@percentage.ToString("F1")%)</small></span>
+                                        </div>
+                                        <div class="progress-bar-container">
+                                            <div class="progress-bar-fill" style="width: @percentage.ToString("F1")%; background: linear-gradient(90deg, #10b981 0%, #059669 100%);"></div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="empty-state-small">
+                                <i class="bi bi-graph-down"></i>
+                                <p>No data available</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="data-card">
+            <div class="card-header-modern">
+                <div class="header-left">
+                    <h3><i class="bi bi-lightning"></i> Quick Actions</h3>
+                    <p>Common administrative tasks</p>
+                </div>
+            </div>
+            <div class="card-body-modern">
+                <div class="quick-actions-grid">
+                    <a href="@Url.Action("Reports", new { status = "Pending" })" class="action-button warning">
+                        <i class="bi bi-hourglass-split"></i>
+                        <span>Pending Reports</span>
+                    </a>
+                    <a href="@Url.Action("Reports", new { status = "In-Progress" })" class="action-button info">
+                        <i class="bi bi-arrow-repeat"></i>
+                        <span>In-Progress Reports</span>
+                    </a>
+                    <a href="@Url.Action("Reports", new { status = "Completed" })" class="action-button success">
+                        <i class="bi bi-check-circle"></i>
+                        <span>Completed Reports</span>
+                    </a>
+                    <a href="@Url.Action("Reports")" class="action-button primary">
+                        <i class="bi bi-file-earmark-text"></i>
+                        <span>All Reports</span>
+                    </a>
+                    <a href="@Url.Action("ServiceRequests", "Admin")" class="action-button secondary">
+                        <i class="bi bi-list-ul"></i>
+                        <span>Service Requests</span>
+                    </a>
+                    <a href="@Url.Action("CreateEvent")" class="action-button success">
+                        <i class="bi bi-plus-circle"></i>
+                        <span>Create Event</span>
+                    </a>
+                    <a href="@Url.Action("Events")" class="action-button info">
+                        <i class="bi bi-calendar-event"></i>
+                        <span>Manage Events</span>
+                    </a>
+                    <a href="@Url.Action("ComingSoon", "Account")" class="action-button primary">
+                        <i class="bi bi-people"></i>
+                        <span>Manage Users</span>
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    :root {
+        --primary-color: #6366f1;
+        --primary-dark: #4f46e5;
+        --secondary-color: #8b5cf6;
+        --success-color: #10b981;
+        --danger-color: #ef4444;
+        --warning-color: #f59e0b;
+        --info-color: #3b82f6;
+        --bg-color: #f8fafc;
+        --card-bg: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --border-color: #e2e8f0;
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+        --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .modern-admin-container {
+        background: var(--bg-color);
+        min-height: 100vh;
+        padding: 2rem 0 4rem;
+    }
+
+    /* Page Header */
+    .page-header {
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .header-content {
+        display: inline-flex;
+        align-items: center;
+        gap: 1.5rem;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        padding: 2rem 3rem;
+        border-radius: 1.5rem;
+        color: white;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .header-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        backdrop-filter: blur(10px);
+    }
+
+    .header-text h1 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+        text-align: left;
+    }
+
+    .header-text p {
+        margin: 0.25rem 0 0;
+        font-size: 1rem;
+        opacity: 0.95;
+        text-align: left;
+    }
+
+    /* Section Header */
+    .section-header {
+        margin: 2.5rem 0 1.5rem;
+    }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+            .section-header h2 i {
+                color: var(--primary-color);
+            }
+
+    /* Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stats-grid-3 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        box-shadow: var(--shadow-md);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.75rem;
+        flex-shrink: 0;
+    }
+
+    .stat-info {
+        flex: 1;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        line-height: 1;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+
+    /* Data Card */
+    .data-card {
+        background: white;
+        border-radius: 1.25rem;
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+    }
+
+    .card-header-modern {
+        padding: 1.5rem 2rem;
+        border-bottom: 2px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .header-left h3 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .header-left h3 i {
+            color: var(--primary-color);
+        }
+
+    .header-left p {
+        margin: 0.25rem 0 0;
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+    }
+
+    .btn-view-all {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: transparent;
+        border: 2px solid var(--primary-color);
+        border-radius: 0.5rem;
+        color: var(--primary-color);
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+        .btn-view-all:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+    .card-body-modern {
+        padding: 1.5rem 2rem;
+    }
+
+    /* Activity List */
+    .activity-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .activity-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1rem;
+        background: var(--bg-color);
+        border-radius: 0.75rem;
+        transition: all 0.2s ease;
+    }
+
+        .activity-item:hover {
+            background: #e0e7ff;
+            transform: translateX(4px);
+        }
+
+    .activity-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+
+    .activity-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .activity-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+        .activity-header h4 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .activity-details {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 0.5rem;
+    }
+
+    .detail-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+    }
+
+        .detail-item i {
+            color: var(--primary-color);
+        }
+
+    .priority-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .request-id {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-family: monospace;
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        margin-top: 0.5rem;
+    }
+
+    .btn-action {
+        width: 40px;
+        height: 40px;
+        border-radius: 0.5rem;
+        background: white;
+        border: 2px solid var(--border-color);
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        flex-shrink: 0;
+    }
+
+        .btn-action:hover {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+            transform: scale(1.05);
+        }
+
+    /* Empty State */
+    .empty-state-small {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-secondary);
+    }
+
+        .empty-state-small i {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.5;
+        }
+
+        .empty-state-small p {
+            margin: 0;
+            font-size: 0.875rem;
+        }
+
+    /* Chart Container */
+    .chart-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .chart-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .chart-label {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .label-text {
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 0.9rem;
+    }
+
+    .label-value {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        font-weight: 600;
+    }
+
+        .label-value small {
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+
+    .progress-bar-container {
+        height: 12px;
+        background: #e2e8f0;
+        border-radius: 1rem;
+        overflow: hidden;
+    }
+
+    .progress-bar-fill {
+        height: 100%;
+        border-radius: 1rem;
+        transition: width 0.6s ease;
+    }
+
+    /* Quick Actions Grid */
+    .quick-actions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+
+    .action-button {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1.5rem 1rem;
+        border-radius: 0.75rem;
+        text-decoration: none;
+        color: white;
+        font-weight: 600;
+        font-size: 0.95rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-sm);
+    }
+
+        .action-button:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            color: white;
+        }
+
+        .action-button i {
+            font-size: 2rem;
+        }
+
+        .action-button.primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        }
+
+        .action-button.secondary {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #7c3aed 100%);
+        }
+
+        .action-button.success {
+            background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+        }
+
+        .action-button.warning {
+            background: linear-gradient(135deg, var(--warning-color) 0%, #d97706 100%);
+        }
+
+        .action-button.info {
+            background: linear-gradient(135deg, var(--info-color) 0%, #2563eb 100%);
+        }
+
+        .action-button.danger {
+            background: linear-gradient(135deg, var(--danger-color) 0%, #dc2626 100%);
+        }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .modern-admin-container
+
+    {
+        padding: 1rem 0 2rem;
+    }
+
+    .header-content {
+        flex-direction: column;
+        padding: 1.5rem 2rem;
+        gap: 1rem;
+    }
+
+    .header-text h1 {
+        font-size: 1.5rem;
+        text-align: center;
+    }
+
+    .header-text p {
+        text-align: center;
+    }
+
+    .stats-grid,
+    .stats-grid-3 {
+        grid-template-columns: 1fr;
+    }
+
+    .card-header-modern {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .btn-view-all {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .activity-item {
+        flex-wrap: wrap;
+    }
+
+    .activity-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .quick-actions-grid {
+        grid-template-columns: 1fr;
+    }
+
+    }
+</style>
+
+<script>
+    // Add animation to progress bars when they come into view
+    document.addEventListener('DOMContentLoaded', function() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'fillProgress 1s ease-out forwards';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.progress-bar-fill').forEach(bar => {
+            observer.observe(bar);
+        });
+    });
+</script>
+
+@functions {
+    public class StatusBadgeInfo
+    {
+        public string Background { get; set; }
+        public string Color { get; set; }
+        public string Icon { get; set; }
+    }
+
+    public class PriorityBadgeInfo
+    {
+        public string Background { get; set; }
+        public string Color { get; set; }
+        public string Icon { get; set; }
+    }
+
+    public StatusBadgeInfo GetReportStatusInfo(string status)
+    {
+        return status switch
+        {
+            "Pending" => new StatusBadgeInfo
+            {
+                Background = "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
+                Color = "white",
+                Icon = "hourglass-split"
+            },
+            "In-Progress" => new StatusBadgeInfo
+            {
+                Background = "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
+                Color = "white",
+                Icon = "arrow-repeat"
+            },
+            "Completed" => new StatusBadgeInfo
+            {
+                Background = "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                Color = "white",
+                Icon = "check-circle-fill"
+            },
+            _ => new StatusBadgeInfo
+            {
+                Background = "#6c757d",
+                Color = "white",
+                Icon = "question-circle"
+            }
+        };
+    }
+
+    public StatusBadgeInfo GetServiceRequestStatusInfo(RequestStatus status)
+    {
+        return status switch
+        {
+            RequestStatus.Submitted => new StatusBadgeInfo
+            {
+                Background = "linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)",
+                Color = "white",
+                Icon = "send-check"
+            },
+            RequestStatus.InProgress => new StatusBadgeInfo
+            {
+                Background = "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
+                Color = "white",
+                Icon = "arrow-repeat"
+            },
+            RequestStatus.UnderReview => new StatusBadgeInfo
+            {
+                Background = "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)",
+                Color = "white",
+                Icon = "search"
+            },
+            RequestStatus.Completed => new StatusBadgeInfo
+            {
+                Background = "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                Color = "white",
+                Icon = "check-circle-fill"
+            },
+            RequestStatus.Cancelled => new StatusBadgeInfo
+            {
+                Background = "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
+                Color = "white",
+                Icon = "x-circle-fill"
+            },
+            _ => new StatusBadgeInfo
+            {
+                Background = "#6c757d",
+                Color = "white",
+                Icon = "question-circle"
+            }
+        };
+    }
+
+    public PriorityBadgeInfo GetPriorityBadge(int priorityScore)
+    {
+        if (priorityScore >= 150)
+        {
+            return new PriorityBadgeInfo
+            {
+                Background = "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
+                Color = "white",
+                Icon = "exclamation-triangle-fill"
+            };
+        }
+        else if (priorityScore >= 100)
+        {
+            return new PriorityBadgeInfo
+            {
+                Background = "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
+                Color = "white",
+                Icon = "exclamation-circle-fill"
+            };
+        }
+        else
+        {
+            return new PriorityBadgeInfo
+            {
+                Background = "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
+                Color = "white",
+                Icon = "info-circle-fill"
+            };
+        }
+    }
+}

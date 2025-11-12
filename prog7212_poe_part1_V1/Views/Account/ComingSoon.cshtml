@@ -1,0 +1,461 @@
+﻿@{
+    ViewData["Title"] = "Coming Soon";
+}
+
+<!-- Import Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --primary-color: #6366f1;
+        --primary-dark: #4f46e5;
+        --secondary-color: #8b5cf6;
+        --success-color: #10b981;
+        --info-color: #3b82f6;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --border-color: #e2e8f0;
+    }
+
+    * {
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Fixed Background */
+    body {
+        position: relative;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+    }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('/images/park.jpg') no-repeat center center;
+            background-size: cover;
+            z-index: -1;
+        }
+
+    /* Coming Soon Container */
+    .coming-soon-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        position: relative;
+    }
+
+    /* Animated Background Elements */
+    .bg-circle {
+        position: fixed;
+        border-radius: 50%;
+        opacity: 0.1;
+        animation: float 20s infinite ease-in-out;
+    }
+
+    .bg-circle-1 {
+        width: 300px;
+        height: 300px;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        top: 10%;
+        left: 10%;
+        animation-delay: 0s;
+    }
+
+    .bg-circle-2 {
+        width: 200px;
+        height: 200px;
+        background: linear-gradient(135deg, var(--info-color), var(--primary-color));
+        bottom: 15%;
+        right: 15%;
+        animation-delay: 5s;
+    }
+
+    .bg-circle-3 {
+        width: 250px;
+        height: 250px;
+        background: linear-gradient(135deg, var(--secondary-color), var(--primary-dark));
+        top: 50%;
+        right: 10%;
+        animation-delay: 10s;
+    }
+
+    @@keyframes float {
+        0%, 100%
+
+    {
+        transform: translateY(0) scale(1);
+    }
+
+    50% {
+        transform: translateY(-30px) scale(1.05);
+    }
+
+    }
+
+    /* Main Card */
+    .coming-soon-card {
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 2rem;
+        padding: 4rem 3rem;
+        box-shadow: 0 25px 70px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(20px);
+        max-width: 700px;
+        width: 100%;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        text-align: center;
+        animation: slideIn 0.8s ease;
+        position: relative;
+        z-index: 1;
+    }
+
+    @@keyframes slideIn {
+        from
+
+    {
+        opacity: 0;
+        transform: scale(0.9) translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+
+    }
+
+    /* Icon Container */
+    .icon-container {
+        width: 120px;
+        height: 120px;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border-radius: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 2rem;
+        box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+        animation: pulse 2s infinite;
+    }
+
+    @@keyframes pulse {
+        0%, 100%
+
+    {
+        transform: scale(1);
+        box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+    }
+
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 15px 40px rgba(99, 102, 241, 0.6);
+    }
+
+    }
+
+    .icon-container i {
+        font-size: 4rem;
+        color: white;
+    }
+
+    /* Typography */
+    .coming-soon-title {
+        font-size: 3rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 1rem;
+        line-height: 1.2;
+    }
+
+    .coming-soon-subtitle {
+        font-size: 1.25rem;
+        color: var(--text-primary);
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .coming-soon-description {
+        font-size: 1rem;
+        color: var(--text-secondary);
+        line-height: 1.6;
+        margin-bottom: 2.5rem;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* Feature List */
+    .feature-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .feature-item {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
+        border: 2px solid rgba(99, 102, 241, 0.1);
+        border-radius: 1rem;
+        padding: 1.5rem 1rem;
+        transition: all 0.3s ease;
+    }
+
+        .feature-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2);
+            border-color: var(--primary-color);
+        }
+
+    .feature-icon {
+        font-size: 2rem;
+        color: var(--primary-color);
+        margin-bottom: 0.75rem;
+    }
+
+    .feature-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    /* Progress Bar */
+    .progress-section {
+        margin-bottom: 2rem;
+    }
+
+    .progress-label {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.75rem;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .progress-bar-container {
+        height: 12px;
+        background: var(--border-color);
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        border-radius: 1rem;
+        width: 75%;
+        animation: progressAnimation 2s ease;
+        box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+    }
+
+    @@keyframes progressAnimation {
+        from
+
+    {
+        width: 0%;
+    }
+
+    to {
+        width: 75%;
+    }
+
+    }
+
+    /* Notification Form */
+    .notify-section {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
+        border-radius: 1rem;
+        padding: 2rem;
+        margin-top: 2rem;
+    }
+
+    .notify-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+    }
+
+    .notify-form {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .notify-input {
+        flex: 1;
+        min-width: 250px;
+        padding: 0.875rem 1.25rem;
+        border: 2px solid var(--border-color);
+        border-radius: 0.75rem;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+
+        .notify-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+    .notify-button {
+        padding: 0.875rem 2rem;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        border: none;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+
+        .notify-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+        }
+
+    /* Back Button */
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 600;
+        margin-top: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+        .back-button:hover {
+            color: var(--primary-dark);
+            transform: translateX(-5px);
+        }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .coming-soon-card
+
+    {
+        padding: 2.5rem 1.5rem;
+    }
+
+    .coming-soon-title {
+        font-size: 2rem;
+    }
+
+    .coming-soon-subtitle {
+        font-size: 1rem;
+    }
+
+    .icon-container {
+        width: 100px;
+        height: 100px;
+    }
+
+        .icon-container i {
+            font-size: 3rem;
+        }
+
+    .feature-list {
+        grid-template-columns: 1fr;
+    }
+
+    .notify-form {
+        flex-direction: column;
+    }
+
+    .notify-input {
+        min-width: 100%;
+    }
+
+    }
+</style>
+
+<div class="coming-soon-container">
+    <!-- Animated Background -->
+    <div class="bg-circle bg-circle-1"></div>
+    <div class="bg-circle bg-circle-2"></div>
+    <div class="bg-circle bg-circle-3"></div>
+
+    <!-- Main Card -->
+    <div class="coming-soon-card">
+        <!-- Icon -->
+        <div class="icon-container">
+            <i class="bi bi-rocket-takeoff"></i>
+        </div>
+
+        <!-- Content -->
+        <h1 class="coming-soon-title">Coming Soon</h1>
+        <h2 class="coming-soon-subtitle">Something Exciting is on the Way!</h2>
+        <p class="coming-soon-description">
+            We're working hard to bring you an amazing new feature.
+            This page will be available soon with enhanced functionality to serve you better.
+        </p>
+
+        <!-- Progress Bar -->
+        <div class="progress-section">
+            <div class="progress-label">
+                <span>Development Progress</span>
+                <span>75%</span>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill"></div>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="feature-list">
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="bi bi-lightning-charge"></i>
+                </div>
+                <p class="feature-title">Lightning Fast</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="bi bi-shield-check"></i>
+                </div>
+                <p class="feature-title">Secure & Safe</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="bi bi-phone"></i>
+                </div>
+                <p class="feature-title">Mobile Friendly</p>
+            </div>
+        </div>
+
+        <!-- Notify Me Section -->
+        <div class="notify-section">
+            <h3 class="notify-title">
+                <i class="bi bi-bell"></i> Get Notified When We Launch
+            </h3>
+            <form class="notify-form" onsubmit="event.preventDefault(); alert('Thank you! We\'ll notify you when this feature is ready.');">
+                <input type="email" class="notify-input" placeholder="Enter your email address" required />
+                <button type="submit" class="notify-button">
+                    <i class="bi bi-send"></i>
+                    Notify Me
+                </button>
+            </form>
+        </div>
+
+        <!-- Back Button -->
+        <a asp-controller="Dashboard" asp-action="Index" class="back-button">
+            <i class="bi bi-arrow-left"></i>
+            Back to Dashboard
+        </a>
+    </div>
+</div>
