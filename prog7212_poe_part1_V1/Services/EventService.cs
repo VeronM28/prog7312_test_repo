@@ -47,30 +47,67 @@ namespace prog7212_poe_part1_V1.Services
 
         public List<Event> SearchEvents(EventSearch search)
         {
-            recentSearches.Push(search);
-            UpdateUserPreferences(search);
+            // Only add to recent searches if there's actual search criteria
+            if (search != null && (!string.IsNullOrEmpty(search.Category) ||
+                !string.IsNullOrEmpty(search.SearchTerm) ||
+                search.StartDate.HasValue ||
+                search.EndDate.HasValue))
+            {
+                recentSearches.Push(search);
+                UpdateUserPreferences(search);
+            }
 
-            var results = _context.Events.AsQueryable();
+            // Start with upcoming events only
+            var results = _context.Events
+                .Where(e => e.Date >= DateTime.Now)
+                .AsQueryable();
 
-            if (!string.IsNullOrEmpty(search.Category))
-                results = results.Where(e => e.Category == search.Category);
+            // Apply filters if search criteria exists
+            if (search != null)
+            {
+                // Filter by category - FIXED: Check for non-empty and not "All"
+                if (!string.IsNullOrEmpty(search.Category) &&
+                    search.Category != "All" &&
+                    search.Category.Trim() != "")
+                {
+                    results = results.Where(e => e.Category == search.Category);
+                }
 
-            if (search.StartDate.HasValue)
-                results = results.Where(e => e.Date >= search.StartDate.Value);
+                // Filter by start date
+                if (search.StartDate.HasValue)
+                {
+                    results = results.Where(e => e.Date >= search.StartDate.Value);
+                }
 
-            if (search.EndDate.HasValue)
-                results = results.Where(e => e.Date <= search.EndDate.Value);
+                // Filter by end date
+                if (search.EndDate.HasValue)
+                {
+                    results = results.Where(e => e.Date <= search.EndDate.Value);
+                }
 
-            if (!string.IsNullOrEmpty(search.SearchTerm))
-                results = results.Where(e => e.Title.Contains(search.SearchTerm) ||
-                                           e.Description.Contains(search.SearchTerm));
+                // Filter by search term (search in title and description)
+                if (!string.IsNullOrEmpty(search.SearchTerm) && search.SearchTerm.Trim() != "")
+                {
+                    var searchTerm = search.SearchTerm.Trim().ToLower();
+                    results = results.Where(e =>
+                        e.Title.ToLower().Contains(searchTerm) ||
+                        e.Description.ToLower().Contains(searchTerm) ||
+                        e.Location.ToLower().Contains(searchTerm));
+                }
+            }
 
-            return results.OrderBy(e => e.Date).ToList();
+            // Order by priority (lower number = higher priority) then by date
+            return results
+                .OrderBy(e => e.Priority)
+                .ThenBy(e => e.Date)
+                .ToList();
         }
 
         private void UpdateUserPreferences(EventSearch search)
         {
-            if (!string.IsNullOrEmpty(search.Category))
+            if (!string.IsNullOrEmpty(search.Category) &&
+                search.Category != "All" &&
+                search.Category.Trim() != "")
             {
                 var preference = _context.UserPreferences
                     .FirstOrDefault(up => up.Category == search.Category);
@@ -98,6 +135,7 @@ namespace prog7212_poe_part1_V1.Services
             var recommendations = new List<Event>();
             var allEvents = GetUpcomingEvents();
 
+            // Get top 3 most searched categories
             var topCategories = _context.UserPreferences
                 .OrderByDescending(up => up.SearchCount)
                 .ThenByDescending(up => up.LastSearched)
@@ -105,15 +143,19 @@ namespace prog7212_poe_part1_V1.Services
                 .Select(up => up.Category)
                 .ToList();
 
+            // Get events from top categories
             foreach (var category in topCategories)
             {
                 var categoryEvents = allEvents
                     .Where(e => e.Category == category)
+                    .OrderBy(e => e.Priority)
+                    .ThenBy(e => e.Date)
                     .Take(2);
 
                 recommendations.AddRange(categoryEvents);
             }
 
+            // If no recommendations based on preferences, show high priority upcoming events
             if (!recommendations.Any())
             {
                 recommendations = allEvents
@@ -149,14 +191,33 @@ namespace prog7212_poe_part1_V1.Services
 
         public List<Event> GetAllEvents()
         {
-            return _context.Events.OrderBy(e => e.Date).ToList();
+            return _context.Events
+                .OrderBy(e => e.Priority)
+                .ThenBy(e => e.Date)
+                .ToList();
         }
 
         public List<Event> GetUpcomingEvents()
         {
             return _context.Events
                 .Where(e => e.Date >= DateTime.Now)
-                .OrderBy(e => e.Date)
+                .OrderBy(e => e.Priority)
+                .ThenBy(e => e.Date)
+                .ToList();
+        }
+
+        // New method: Get events by category
+        public List<Event> GetEventsByCategory(string category)
+        {
+            if (string.IsNullOrEmpty(category) || category == "All")
+            {
+                return GetUpcomingEvents();
+            }
+
+            return _context.Events
+                .Where(e => e.Date >= DateTime.Now && e.Category == category)
+                .OrderBy(e => e.Priority)
+                .ThenBy(e => e.Date)
                 .ToList();
         }
     }

@@ -26,8 +26,6 @@ namespace prog7212_poe_part1_V1.Models
         [StringLength(200)]
         public string Location { get; set; }
 
-        public string ImageUrl { get; set; }
-
         [Range(0, 10000)]
         public decimal Price { get; set; }
 
@@ -50,8 +48,8 @@ namespace prog7212_poe_part1_V1.Models
     public class UserPreference
     {
         public int Id { get; set; }
-        public string UserId { get; set; }
-        public string Category { get; set; }
+        public string? UserId { get; set; }
+        public string? Category { get; set; }
         public int SearchCount { get; set; }
         public DateTime LastSearched { get; set; }
     }

@@ -9,7 +9,7 @@ using prog7212_poe_part1_V1.Services;
 
 namespace prog7212_poe_part1_V1.Controllers
 {
-    [Authorize(Roles = "Admin")] // Ensure only admins can access
+    [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -21,7 +21,6 @@ namespace prog7212_poe_part1_V1.Controllers
             _context = context;
             _userManager = userManager;
             _eventService = eventService;
-
         }
 
         // GET: Admin/Reports
@@ -29,13 +28,11 @@ namespace prog7212_poe_part1_V1.Controllers
         {
             var query = _context.Reports.Include(r => r.User).AsQueryable();
 
-            // Filter by category if specified
             if (!string.IsNullOrEmpty(category) && category != "All")
             {
                 query = query.Where(r => r.Category == category);
             }
 
-            // Filter by status if specified
             if (!string.IsNullOrEmpty(status) && status != "All")
             {
                 query = query.Where(r => r.Status == status);
@@ -69,7 +66,6 @@ namespace prog7212_poe_part1_V1.Controllers
                     return RedirectToAction("Reports");
                 }
 
-                // Validate status
                 var validStatuses = new[] { "Pending", "In-Progress", "Completed" };
                 if (!validStatuses.Contains(status))
                 {
@@ -85,7 +81,6 @@ namespace prog7212_poe_part1_V1.Controllers
             catch (Exception ex)
             {
                 TempData["Error"] = "An error occurred while updating the status.";
-                // Log the exception here
             }
 
             return RedirectToAction("Reports");
@@ -182,7 +177,14 @@ namespace prog7212_poe_part1_V1.Controllers
         public IActionResult CreateEvent()
         {
             ViewBag.Categories = GetEventCategoryList();
-            return View();
+            // Initialize with default values to help with validation
+            var model = new Event
+            {
+                Date = DateTime.Now.AddDays(1), // Default to tomorrow
+                Priority = 3,
+                Price = 0
+            };
+            return View(model);
         }
 
         // POST: Admin/CreateEvent
@@ -190,27 +192,43 @@ namespace prog7212_poe_part1_V1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateEvent(Event eventModel)
         {
-            if (ModelState.IsValid)
+            // Remove validation for fields that are auto-populated
+            ModelState.Remove("CreatedBy");
+            ModelState.Remove("CreatedDate");
+            ModelState.Remove("Id");
+
+            // Additional validation logging for debugging
+            if (!ModelState.IsValid)
             {
-                try
-                {
-                    var user = await _userManager.GetUserAsync(User);
-                    eventModel.CreatedBy = user?.Email;
-                    eventModel.CreatedDate = DateTime.Now;
-
-                    _eventService.AddEvent(eventModel);
-
-                    TempData["Success"] = "Event created successfully!";
-                    return RedirectToAction("Events");
-                }
-                catch (Exception ex)
-                {
-                    TempData["Error"] = "An error occurred while creating the event.";
-                }
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                TempData["Error"] = "Validation failed: " + string.Join(", ", errors);
+                ViewBag.Categories = GetEventCategoryList();
+                return View(eventModel);
             }
 
-            ViewBag.Categories = GetEventCategoryList();
-            return View(eventModel);
+            try
+            {
+                var user = await _userManager.GetUserAsync(User);
+                eventModel.CreatedBy = user?.Email ?? "Admin";
+                eventModel.CreatedDate = DateTime.Now;
+
+                // Ensure Priority is set
+                if (eventModel.Priority < 1 || eventModel.Priority > 5)
+                {
+                    eventModel.Priority = 3;
+                }
+
+                _eventService.AddEvent(eventModel);
+
+                TempData["Success"] = "Event created successfully!";
+                return RedirectToAction("Events");
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"An error occurred while creating the event: {ex.Message}";
+                ViewBag.Categories = GetEventCategoryList();
+                return View(eventModel);
+            }
         }
 
         // GET: Admin/EditEvent/5
@@ -232,22 +250,30 @@ namespace prog7212_poe_part1_V1.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult EditEvent(Event eventModel)
         {
-            if (ModelState.IsValid)
+            // Remove validation for auto-populated fields
+            ModelState.Remove("CreatedBy");
+            ModelState.Remove("CreatedDate");
+
+            if (!ModelState.IsValid)
             {
-                try
-                {
-                    _eventService.UpdateEvent(eventModel);
-                    TempData["Success"] = "Event updated successfully!";
-                    return RedirectToAction("Events");
-                }
-                catch (Exception ex)
-                {
-                    TempData["Error"] = "An error occurred while updating the event.";
-                }
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                TempData["Error"] = "Validation failed: " + string.Join(", ", errors);
+                ViewBag.Categories = GetEventCategoryList();
+                return View(eventModel);
             }
 
-            ViewBag.Categories = GetEventCategoryList();
-            return View(eventModel);
+            try
+            {
+                _eventService.UpdateEvent(eventModel);
+                TempData["Success"] = "Event updated successfully!";
+                return RedirectToAction("Events");
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"An error occurred while updating the event: {ex.Message}";
+                ViewBag.Categories = GetEventCategoryList();
+                return View(eventModel);
+            }
         }
 
         // POST: Admin/DeleteEvent/5
@@ -262,7 +288,7 @@ namespace prog7212_poe_part1_V1.Controllers
             }
             catch (Exception ex)
             {
-                TempData["Error"] = "An error occurred while deleting the event.";
+                TempData["Error"] = $"An error occurred while deleting the event: {ex.Message}";
             }
 
             return RedirectToAction("Events");
@@ -271,19 +297,19 @@ namespace prog7212_poe_part1_V1.Controllers
         private List<string> GetEventCategoryList()
         {
             return new List<string>
-    {
-        "Music",
-        "Technology",
-        "Food",
-        "Art",
-        "Sports",
-        "Education",
-        "Business",
-        "Health",
-        "Entertainment",
-        "Community",
-        "Other"
-    };
+            {
+                "Music",
+                "Technology",
+                "Food",
+                "Art",
+                "Sports",
+                "Education",
+                "Business",
+                "Health",
+                "Entertainment",
+                "Community",
+                "Other"
+            };
         }
     }
 }

@@ -32,36 +32,54 @@
                     <h5>Find Your Perfect Event</h5>
                 </div>
                 <div class="search-body">
-                    <form method="post" asp-action="Search">
+                    <form method="post" asp-action="Search" asp-controller="Events">
                         <div class="row g-3">
                             <div class="col-md-3">
                                 <label class="form-label">Category</label>
-                                <select class="form-select modern-select" asp-for="SearchCriteria.Category">
+                                <select class="form-select modern-select"
+                                        name="Category"
+                                        id="categorySelect">
                                     <option value="">All Categories</option>
                                     @foreach (var category in Model.Categories)
                                     {
-                                        <option value="@category">@category</option>
+                                        <option value="@category"
+                                                selected="@(Model.SearchCriteria.Category == category ? "selected" : null)">
+                                            @category
+                                        </option>
                                     }
                                 </select>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">From Date</label>
-                                <input type="date" class="form-control modern-input" asp-for="SearchCriteria.StartDate" />
+                                <input type="date"
+                                       class="form-control modern-input"
+                                       name="StartDate"
+                                       id="startDate"
+                                       value="@(Model.SearchCriteria.StartDate?.ToString("yyyy-MM-dd") ?? "")" />
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">To Date</label>
-                                <input type="date" class="form-control modern-input" asp-for="SearchCriteria.EndDate" />
+                                <input type="date"
+                                       class="form-control modern-input"
+                                       name="EndDate"
+                                       id="endDate"
+                                       value="@(Model.SearchCriteria.EndDate?.ToString("yyyy-MM-dd") ?? "")" />
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">Keywords</label>
-                                <input type="text" class="form-control modern-input" asp-for="SearchCriteria.SearchTerm" placeholder="Search events..." />
+                                <input type="text"
+                                       class="form-control modern-input"
+                                       name="SearchTerm"
+                                       id="searchTerm"
+                                       placeholder="Search events..."
+                                       value="@(Model.SearchCriteria.SearchTerm ?? "")" />
                             </div>
                         </div>
                         <div class="search-actions">
                             <button type="submit" class="btn btn-modern-primary">
                                 <i class="fas fa-search me-2"></i>Search Events
                             </button>
-                            <a href="@Url.Action("Index")" class="btn btn-modern-secondary">
+                            <a href="@Url.Action("Index", "Events")" class="btn btn-modern-secondary">
                                 <i class="fas fa-redo me-2"></i>Clear Filters
                             </a>
                         </div>
@@ -82,7 +100,7 @@
                     @foreach (var search in Model.RecentSearches)
                     {
                         <span class="search-tag">
-                            @if (!string.IsNullOrEmpty(search.Category))
+                            @if (!string.IsNullOrEmpty(search.Category) && search.Category != "All")
                             {
                                 <span class="tag-item"><i class="fas fa-folder"></i> @search.Category</span>
                             }
@@ -90,9 +108,13 @@
                             {
                                 <span class="tag-item"><i class="fas fa-calendar"></i> @search.StartDate.Value.ToShortDateString()</span>
                             }
+                            @if (search.EndDate.HasValue)
+                            {
+                                <span class="tag-item"><i class="fas fa-calendar"></i> to @search.EndDate.Value.ToShortDateString()</span>
+                            }
                             @if (!string.IsNullOrEmpty(search.SearchTerm))
                             {
-                                <span class="tag-item"><i class="fas fa-search"></i> @search.SearchTerm</span>
+                                <span class="tag-item"><i class="fas fa-search"></i> "@search.SearchTerm"</span>
                             }
                         </span>
                     }
@@ -124,6 +146,7 @@
                                     <span class="category-badge">@recommendation.Category</span>
                                 </div>
                             </div>
+                            <a href="@Url.Action("Details", "Events", new { id = recommendation.Id })" class="stretched-link"></a>
                         </div>
                     }
                 </div>
@@ -137,7 +160,13 @@
                     <i class="fas fa-calendar-check"></i>
                     <h3>Upcoming Events</h3>
                 </div>
-                <p class="section-subtitle">@Model.UpcomingEvents.Count() events available</p>
+                <p class="section-subtitle">
+                    @Model.UpcomingEvents.Count() event@(Model.UpcomingEvents.Count() != 1 ? "s" : "") available
+                    @if (!string.IsNullOrEmpty(Model.SearchCriteria.Category) && Model.SearchCriteria.Category != "All")
+                    {
+                        <span> in <strong>@Model.SearchCriteria.Category</strong></span>
+                    }
+                </p>
             </div>
 
             @if (Model.UpcomingEvents.Any())
@@ -177,7 +206,7 @@
                                 </div>
                             </div>
                             <div class="event-card-footer">
-                                <a href="@Url.Action("Details", new { id = eventItem.Id })" class="btn-details">
+                                <a href="@Url.Action("Details", "Events", new { id = eventItem.Id })" class="btn-details">
                                     View Details
                                     <i class="fas fa-arrow-right"></i>
                                 </a>
@@ -194,7 +223,7 @@
                     </div>
                     <h4>No Events Found</h4>
                     <p>We couldn't find any events matching your criteria. Try adjusting your filters or check back later.</p>
-                    <a href="@Url.Action("Index")" class="btn btn-modern-primary">
+                    <a href="@Url.Action("Index", "Events")" class="btn btn-modern-primary">
                         <i class="fas fa-redo me-2"></i>Reset Filters
                     </a>
                 </div>
@@ -496,6 +525,7 @@
         overflow: hidden;
         transition: all 0.3s ease;
         box-shadow: var(--shadow-sm);
+        cursor: pointer;
     }
 
         .recommendation-card::before {
@@ -564,6 +594,16 @@
         border-radius: 1rem;
         font-size: 0.75rem;
         font-weight: 600;
+    }
+
+    .stretched-link::after {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 1;
+        content: "";
     }
 
     /* Events Grid */

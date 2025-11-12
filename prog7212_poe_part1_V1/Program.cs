@@ -8,7 +8,7 @@ using prog7212_poe_part1_V1.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
+builder.Services.AddScoped<EventService>();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -20,7 +20,7 @@ builder.Services.Configure<FormOptions>(options =>
     options.MultipartBodyLengthLimit = 5 * 1024 * 1024; // 5MB limit
 });
 
-builder.Services.AddScoped<EventService>();
+
 
 builder.Services.AddControllersWithViews();
 
