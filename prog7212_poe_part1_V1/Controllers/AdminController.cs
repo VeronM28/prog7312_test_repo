@@ -180,7 +180,15 @@ namespace prog7212_poe_part1_V1.Controllers
             // Initialize with default values to help with validation
             var model = new Event
             {
-                Date = DateTime.Now.AddDays(1), // Default to tomorrow
+                // Remove seconds and milliseconds from default date
+                Date = new DateTime(
+                    DateTime.Now.AddDays(1).Year,
+                    DateTime.Now.AddDays(1).Month,
+                    DateTime.Now.AddDays(1).Day,
+                    DateTime.Now.AddDays(1).Hour,
+                    DateTime.Now.AddDays(1).Minute,
+                    0
+                ),
                 Priority = 3,
                 Price = 0
             };
@@ -211,6 +219,16 @@ namespace prog7212_poe_part1_V1.Controllers
                 var user = await _userManager.GetUserAsync(User);
                 eventModel.CreatedBy = user?.Email ?? "Admin";
                 eventModel.CreatedDate = DateTime.Now;
+
+                // Remove seconds and milliseconds from the date before saving
+                eventModel.Date = new DateTime(
+                    eventModel.Date.Year,
+                    eventModel.Date.Month,
+                    eventModel.Date.Day,
+                    eventModel.Date.Hour,
+                    eventModel.Date.Minute,
+                    0
+                );
 
                 // Ensure Priority is set
                 if (eventModel.Priority < 1 || eventModel.Priority > 5)

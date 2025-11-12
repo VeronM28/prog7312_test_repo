@@ -16,6 +16,8 @@ namespace prog7212_poe_part1_V1.Models
         public string Description { get; set; }
 
         [Required]
+        [Display(Name = "Event Date & Time")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-ddTHH:mm}")]
         public DateTime Date { get; set; }
 
         [Required]
